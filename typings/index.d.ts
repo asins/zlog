@@ -16,6 +16,7 @@ interface Debug {
   disable: () => string;
   enable: (namespaces: string) => void;
   enabled: (namespaces: string) => boolean;
+  selectColor: (namespaces: string) => string;
   log: (...args: any[]) => any;
 
   formatters: Formatters;

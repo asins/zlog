@@ -361,8 +361,10 @@ function createDebug(namespace, canUseColor) {
 }
 Object.assign(createDebug, common);
 
-createDebug.enable('test:*');
+// Debug.enable('*');
 const debug = createDebug('test:debug');
 const log$1 = createDebug('test:log');
+const logger = createDebug('logger:debugger');
 debug('debug');
 log$1('log');
+logger('debugger');
