@@ -1,0 +1,36 @@
+{
+  "extends": "eslint-config-ali",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "globals": {
+    "globalThis": false
+  },
+  "rules": {
+    "no-case-declarations": 0,
+    "no-param-reassign": 0,
+    "no-prototype-builtins": 0,
+    "no-multi-assign": 0,
+    "no-nested-ternary": 0,
+    "no-lonely-if": 0,
+    "no-plusplus": 0,
+    "no-console": 0,
+    "no-new": 0,
+    "no-mixed-operators": 0,
+    "no-unused-vars": 0,
+    "guard-for-in": 0,
+    "array-callback-return": 0,
+    "import/prefer-default-export": 0,
+    "no-bitwise": 0,
+    "default-case": 0,
+    "no-shadow": 0, // 禁止变量声明覆盖外层作用域的变量，此仓库只用于定义所以忽略此检查
+    "max-len": 0
+  }
+}
