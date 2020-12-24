@@ -44,6 +44,7 @@ function formatArgs(self, namespace, color, args, diff) {
   // 最后的“％c”有点棘手，因为在％c之前或之后可能还会传递其他参数，因此我们需要找出正确的索引以将CSS插入
   let index = 0;
   let lastC = 0;
+  // https://en.wikipedia.org/wiki/Printf_format_string
   args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
     if (match === '%%') {
       return;
@@ -108,7 +109,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
       args.unshift('%O');
     }
 
-    // Apply env-specific formatting (colors, etc.)
+    // 应用特定于环境的格式
     formatArgs(debug, namespace, color, args, diff);
 
     const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
@@ -130,4 +131,3 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
 Object.assign(createDebug, common);
 
 export default createDebug as IDebug;
-
