@@ -58,7 +58,7 @@ function show2Html(Debug) {
     let isUseColor = false;
     let index = 0;
     let style = '';
-    let html = args[0].replace(/%([diufFeEgGxXoscpaAn%])/g, (match, format) => {
+    let html = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
       match = argsList[index];
       if (index === 1) style = match;
       switch (format) {
