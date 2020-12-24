@@ -1,15 +1,81 @@
 import Debug from '../src/index';
 
-// Debug.enable('*');
+Debug.enable('*'); // 对所有日志模式设置显示规则
 
-const debug = Debug('test:debug');
+const $el = document.createElement('div');
+$el.setAttribute('class', 'debug-container');
+$el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
+  'position:fixed;top:0;right:0;padding:5px 10px;' + // pointer-events: none;' +
+  'background:rgba(0,0,0,.4);color:white;font-size:12px;';
 
-const log = Debug('test:log');
+document.body.appendChild($el);
+Debug.log = (...args) => {
+  // console.log('log-->', args);
+  const argsList = args.slice(1);
+  let isUseColor = false;
+  let index = 0;
+  let html = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+    match = argsList[index];
+    switch (format) {
+      // case 'O': // 在多行上漂亮地打印对象
+      // match = `<pre style="display:inline-block;vertical-align: top;margin:0;">${ JSON.stringify(match, null, 2) }</pre>`;
+      // break;
+      case 'O': // 在多行上漂亮地打印对象
+      case 'o': // 将对象漂亮地打印在一行上
+        match = `<code>${ JSON.stringify(match) }</code>`;
+        break;
+      case 'c': // 颜色
+        match = `${isUseColor ? '</span>' : '' }<span style="${match}">`;
+        isUseColor = true;
+        break;
+      case '%':
+        match = '%';
+        index -= 1;
+        break;
+    }
+    index += 1;
+    return match;
+  });
 
-const logger = Debug('logger:debugger');
+  if (isUseColor) html += '</span>';
+  $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
+};
 
-debug('debug');
+const debugTestFormatters = Debug('test:format');
+const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('对象漂亮的多行显示:%O', obj);
+debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
+debugTestFormatters('显示字符串: %o', '这是一个字符串变量的内容');
+debugTestFormatters('整数和浮点数显示: %d, %f', 123, 3.1415926);
+debugTestFormatters('json显示: %j', obj);
+debugTestFormatters('百分号不占用参数位: %%, test', 234);
 
-log('log');
+const appLog = Debug('test:log');
+appLog('log');
 
-logger('debugger');
+const appLogger = Debug('logger:debugger');
+appLogger('debugger');
+
+
+// 设置日志显示规则
+Debug.enable('name:*, -name:input');
+
+// 定义debug
+const logInput = Debug('name:input');
+const logOutput = Debug('name:output');
+const logCtrl = Debug('name:ctrl');
+
+// 打印日志
+logInput('test input'); // 当前namespace中不会显示
+logOutput('test output');
+logCtrl('test ctrl');
+
+setTimeout(() => {
+  console.log('logInput日志模式是否允许显示:', logInput.enabled);
+  logInput.enabled = true; // 单独针对logInput模式开启日志显示
+  console.log('通过namespace查询日志模式是否显示(不支持通配符)', Debug.enabled('name:output'));
+  logInput('test input timeout');
+  logOutput('test output timeout');
+  logCtrl('test ctrl timeout');
+}, 100);

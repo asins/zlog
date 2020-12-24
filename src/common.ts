@@ -18,7 +18,7 @@ export const formatters = {
     try {
       return JSON.stringify(v);
     } catch (error) {
-      return `[UnexpectedJSONParseError]: ${ error.message}`;
+      return `[JSONParseError]: ${ error.message}`;
     }
   },
 };
@@ -122,12 +122,11 @@ export function useColors() {
 }
 
 /**
-* Enables a debug mode by namespaces. This can include modes
-* separated by a colon and wildcards.
-*
-* @param {String} namespaces
-* @api public
-*/
+ * 通过名称空间启用调试模式。这可以包括用冒号和通配符分隔的模式。
+ *
+ * @param {String} namespaces
+ * @api public
+ */
 export function enable(namespaces) {
   save(namespaces);
 
@@ -170,7 +169,7 @@ export function disable() {
 }
 
 /**
- * Returns true if the given mode name is enabled, false otherwise.
+ * 如果启用了给定的模式名称，则返回true，否则返回false。
  *
  * @param {String} name
  * @return {Boolean}
@@ -209,8 +208,8 @@ export function enabled(name) {
   * @api private
   */
 function toNamespace(regexp) {
-  return regexp.toString()
-    .substring(2, regexp.toString().length - 2)
+  const name = regexp.toString();
+  return name.substring(2, name.length - 2)
     .replace(/\.\*\?$/, '*');
 }
 
@@ -245,14 +244,9 @@ export function selectColor(namespace) {
 }
 
 /**
- * Invokes `console.debug()` when available.
- * No-op when `console.debug` is not a "function".
- * If `console.debug` is not available, falls back
- * to `console.log`.
- *
  * @api public
  */
-export const log = console.debug || console.log || (() => {});
+export const log = console.log || (() => {});
 
 // 设置默认显示的日志
 enable(load());

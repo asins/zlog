@@ -83,22 +83,13 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     color = common.selectColor(namespace);
   }
 
-  Object.defineProperty(debug, 'enabled', {
-    enumerable: true,
-    configurable: false,
-    get: () => (enableOverride === null ? common.enabled(namespace) : enableOverride),
-    set: (v) => {
-      enableOverride = v;
-    },
-  });
-
   function debug(...args) {
     // Disabled?
     if (!(debug as IDebugger).enabled) {
       return;
     }
 
-    const currTime = Date.now();
+    const currTime = performance.now();
     const diff = currTime - (prevTime || currTime);
     prevTime = currTime;
 
@@ -113,18 +104,17 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     let index = 0;
     args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
       // If we encounter an escaped % then don't increase the array index
-      if (match === '%%') {
-        return '%';
-      }
-      index++;
-      const formatter = common.formatters[format];
-      if (typeof formatter === 'function') {
-        const val = args[index];
-        match = formatter.call(debug, val);
+      if (match !== '%%') {
+        index++;
+        const formatter = common.formatters[format];
+        if (typeof formatter === 'function') {
+          const val = args[index];
+          match = formatter.call(debug, val);
 
-        // Now we need to remove `args[index]` since it's inlined in the `format`
-        args.splice(index, 1);
-        index--;
+          // Now we need to remove `args[index]` since it's inlined in the `format`
+          args.splice(index, 1);
+          index--;
+        }
       }
       return match;
     });
@@ -132,9 +122,18 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     // Apply env-specific formatting (colors, etc.)
     formatArgs(namespace, color, args, diff);
 
-    const logFn = (debug as IDebugger).log || common.log;
+    const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
     logFn.apply(debug, args);
   }
+
+  Object.defineProperty(debug, 'enabled', {
+    enumerable: true,
+    configurable: false,
+    get: () => (enableOverride === null ? common.enabled(namespace) : enableOverride),
+    set: (v) => {
+      enableOverride = v;
+    },
+  });
 
   return debug;
 }

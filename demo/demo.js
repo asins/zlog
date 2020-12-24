@@ -17,7 +17,7 @@ const formatters = {
             return JSON.stringify(v);
         }
         catch (error) {
-            return `[UnexpectedJSONParseError]: ${error.message}`;
+            return `[JSONParseError]: ${error.message}`;
         }
     },
 };
@@ -111,12 +111,11 @@ function useColors() {
             navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)));
 }
 /**
-* Enables a debug mode by namespaces. This can include modes
-* separated by a colon and wildcards.
-*
-* @param {String} namespaces
-* @api public
-*/
+ * 通过名称空间启用调试模式。这可以包括用冒号和通配符分隔的模式。
+ *
+ * @param {String} namespaces
+ * @api public
+ */
 function enable(namespaces) {
     save(namespaces);
     names = [];
@@ -153,7 +152,7 @@ function disable() {
     return namespaces;
 }
 /**
- * Returns true if the given mode name is enabled, false otherwise.
+ * 如果启用了给定的模式名称，则返回true，否则返回false。
  *
  * @param {String} name
  * @return {Boolean}
@@ -187,8 +186,8 @@ function enabled(name) {
   * @api private
   */
 function toNamespace(regexp) {
-    return regexp.toString()
-        .substring(2, regexp.toString().length - 2)
+    const name = regexp.toString();
+    return name.substring(2, name.length - 2)
         .replace(/\.\*\?$/, '*');
 }
 /**
@@ -219,14 +218,9 @@ function selectColor(namespace) {
     return colors[Math.abs(hash) % colors.length];
 }
 /**
- * Invokes `console.debug()` when available.
- * No-op when `console.debug` is not a "function".
- * If `console.debug` is not available, falls back
- * to `console.log`.
- *
  * @api public
  */
-const log = console.debug || console.log || (() => { });
+const log = console.log || (() => { });
 // 设置默认显示的日志
 enable(load());
 
@@ -313,20 +307,12 @@ function createDebug(namespace, canUseColor) {
     if (canUseColor === true || useColors()) {
         color = selectColor(namespace);
     }
-    Object.defineProperty(debug, 'enabled', {
-        enumerable: true,
-        configurable: false,
-        get: () => (enableOverride === null ? enabled(namespace) : enableOverride),
-        set: (v) => {
-            enableOverride = v;
-        },
-    });
     function debug(...args) {
         // Disabled?
         if (!debug.enabled) {
             return;
         }
-        const currTime = Date.now();
+        const currTime = performance.now();
         const diff = currTime - (prevTime || currTime);
         prevTime = currTime;
         args[0] = coerce(args[0]);
@@ -338,33 +324,102 @@ function createDebug(namespace, canUseColor) {
         let index = 0;
         args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
             // If we encounter an escaped % then don't increase the array index
-            if (match === '%%') {
-                return '%';
-            }
-            index++;
-            const formatter = formatters[format];
-            if (typeof formatter === 'function') {
-                const val = args[index];
-                match = formatter.call(debug, val);
-                // Now we need to remove `args[index]` since it's inlined in the `format`
-                args.splice(index, 1);
-                index--;
+            if (match !== '%%') {
+                index++;
+                const formatter = formatters[format];
+                if (typeof formatter === 'function') {
+                    const val = args[index];
+                    match = formatter.call(debug, val);
+                    // Now we need to remove `args[index]` since it's inlined in the `format`
+                    args.splice(index, 1);
+                    index--;
+                }
             }
             return match;
         });
         // Apply env-specific formatting (colors, etc.)
         formatArgs(namespace, color, args, diff);
-        const logFn = debug.log || log;
+        const logFn = debug.log || createDebug.log;
         logFn.apply(debug, args);
     }
+    Object.defineProperty(debug, 'enabled', {
+        enumerable: true,
+        configurable: false,
+        get: () => (enableOverride === null ? enabled(namespace) : enableOverride),
+        set: (v) => {
+            enableOverride = v;
+        },
+    });
     return debug;
 }
 Object.assign(createDebug, common);
 
-// Debug.enable('*');
-const debug = createDebug('test:debug');
-const log$1 = createDebug('test:log');
-const logger = createDebug('logger:debugger');
-debug('debug');
-log$1('log');
-logger('debugger');
+createDebug.enable('*'); // 对所有日志模式设置显示规则
+const $el = document.createElement('div');
+$el.setAttribute('class', 'debug-container');
+$el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
+    'position:fixed;top:0;right:0;padding:5px 10px;' + // pointer-events: none;' +
+    'background:rgba(0,0,0,.4);color:white;font-size:12px;';
+document.body.appendChild($el);
+createDebug.log = (...args) => {
+    // console.log('log-->', args);
+    const argsList = args.slice(1);
+    let isUseColor = false;
+    let index = 0;
+    let html = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+        match = argsList[index];
+        switch (format) {
+            // case 'O': // 在多行上漂亮地打印对象
+            // match = `<pre style="display:inline-block;vertical-align: top;margin:0;">${ JSON.stringify(match, null, 2) }</pre>`;
+            // break;
+            case 'O': // 在多行上漂亮地打印对象
+            case 'o': // 将对象漂亮地打印在一行上
+                match = `<code>${JSON.stringify(match)}</code>`;
+                break;
+            case 'c': // 颜色
+                match = `${isUseColor ? '</span>' : ''}<span style="${match}">`;
+                isUseColor = true;
+                break;
+            case '%':
+                match = '%';
+                index -= 1;
+                break;
+        }
+        index += 1;
+        return match;
+    });
+    if (isUseColor)
+        html += '</span>';
+    $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
+};
+const debugTestFormatters = createDebug('test:format');
+const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('对象漂亮的多行显示:%O', obj);
+debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
+debugTestFormatters('显示字符串: %o', '这是一个字符串变量的内容');
+debugTestFormatters('整数和浮点数显示: %d, %f', 123, 3.1415926);
+debugTestFormatters('json显示: %j', obj);
+debugTestFormatters('百分号不占用参数位: %%, test', 234);
+const appLog = createDebug('test:log');
+appLog('log');
+const appLogger = createDebug('logger:debugger');
+appLogger('debugger');
+// 设置日志显示规则
+createDebug.enable('name:*, -name:input');
+// 定义debug
+const logInput = createDebug('name:input');
+const logOutput = createDebug('name:output');
+const logCtrl = createDebug('name:ctrl');
+// 打印日志
+logInput('test input'); // 当前namespace中不会显示
+logOutput('test output');
+logCtrl('test ctrl');
+setTimeout(() => {
+    console.log('logInput日志模式是否允许显示:', logInput.enabled);
+    logInput.enabled = true; // 单独针对logInput模式开启日志显示
+    console.log('通过namespace查询日志模式是否显示(不支持通配符)', createDebug.enabled('name:output'));
+    logInput('test input timeout');
+    logOutput('test output timeout');
+    logCtrl('test ctrl timeout');
+}, 100);
