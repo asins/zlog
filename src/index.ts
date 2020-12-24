@@ -131,3 +131,5 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
 Object.assign(createDebug, common);
 
 export default createDebug as IDebug;
+
+export { default as show2Html } from './show2Html';
