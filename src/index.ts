@@ -30,37 +30,45 @@ function humanize(ms) {
  * @api public
  */
 
-function formatArgs(namespace, color, args, diff) {
+function formatArgs(self, namespace, color, args, diff) {
   args[0] = `${(color ? '%c' : '') +
     namespace + (color ? ' %c' : ' ') +
     args[0] + (color ? '%c ' : ' ')
     }+${humanize(diff)}`;
 
-  if (!color) {
-    return;
-  }
-
   const c = `color: ${color}`;
-  args.splice(1, 0, c, 'color: inherit');
 
   // The final "%c" is somewhat tricky, because there could be other
   // arguments passed either before or after the %c, so we need to
   // figure out the correct index to insert the CSS into
+  // 最后的“％c”有点棘手，因为在％c之前或之后可能还会传递其他参数，因此我们需要找出正确的索引以将CSS插入
   let index = 0;
   let lastC = 0;
-  args[0].replace(/%[a-zA-Z%]/g, (match) => {
+  args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
     if (match === '%%') {
       return;
     }
     index++;
-    if (match === '%c') {
-      // We only are interested in the *last* %c
-      // (the user may have provided their own)
+
+    // Apply any `formatters` transformations
+    const formatter = common.formatters[format];
+    if (typeof formatter === 'function') {
+      const val = args[index];
+      match = formatter.call(self, val);
+
+      // Now we need to remove `args[index]` since it's inlined in the `format`
+      args.splice(index, 1);
+      index--;
+    } else if (match === '%c') {
+      // We only are interested in the *last* %c (the user may have provided their own)
       lastC = index;
     }
   });
 
-  args.splice(lastC, 0, c);
+  if (color) {
+    args.splice(1, 0, c, 'color: inherit');
+    args.splice(lastC, 0, c);
+  }
 }
 
 /**
@@ -100,27 +108,8 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
       args.unshift('%O');
     }
 
-    // Apply any `formatters` transformations
-    let index = 0;
-    args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-      // If we encounter an escaped % then don't increase the array index
-      if (match !== '%%') {
-        index++;
-        const formatter = common.formatters[format];
-        if (typeof formatter === 'function') {
-          const val = args[index];
-          match = formatter.call(debug, val);
-
-          // Now we need to remove `args[index]` since it's inlined in the `format`
-          args.splice(index, 1);
-          index--;
-        }
-      }
-      return match;
-    });
-
     // Apply env-specific formatting (colors, etc.)
-    formatArgs(namespace, color, args, diff);
+    formatArgs(debug, namespace, color, args, diff);
 
     const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
     logFn.apply(debug, args);

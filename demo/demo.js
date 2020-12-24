@@ -8,19 +8,7 @@ let skips = [];
 * 调试“ format”参数的特殊“％n”处理函数的映射。
 * 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
 */
-const formatters = {
-    /**
-     * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
-     */
-    j(v) {
-        try {
-            return JSON.stringify(v);
-        }
-        catch (error) {
-            return `[JSONParseError]: ${error.message}`;
-        }
-    },
-};
+const formatters = {};
 const colors = createColors();
 function createColors() {
     const colors = [];
@@ -264,32 +252,40 @@ function humanize(ms) {
  *
  * @api public
  */
-function formatArgs(namespace, color, args, diff) {
+function formatArgs(self, namespace, color, args, diff) {
     args[0] = `${(color ? '%c' : '') +
         namespace + (color ? ' %c' : ' ') +
         args[0] + (color ? '%c ' : ' ')}+${humanize(diff)}`;
-    if (!color) {
-        return;
-    }
     const c = `color: ${color}`;
-    args.splice(1, 0, c, 'color: inherit');
     // The final "%c" is somewhat tricky, because there could be other
     // arguments passed either before or after the %c, so we need to
     // figure out the correct index to insert the CSS into
+    // 最后的“％c”有点棘手，因为在％c之前或之后可能还会传递其他参数，因此我们需要找出正确的索引以将CSS插入
     let index = 0;
     let lastC = 0;
-    args[0].replace(/%[a-zA-Z%]/g, (match) => {
+    args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
         if (match === '%%') {
             return;
         }
         index++;
-        if (match === '%c') {
-            // We only are interested in the *last* %c
-            // (the user may have provided their own)
+        // Apply any `formatters` transformations
+        const formatter = formatters[format];
+        if (typeof formatter === 'function') {
+            const val = args[index];
+            match = formatter.call(self, val);
+            // Now we need to remove `args[index]` since it's inlined in the `format`
+            args.splice(index, 1);
+            index--;
+        }
+        else if (match === '%c') {
+            // We only are interested in the *last* %c (the user may have provided their own)
             lastC = index;
         }
     });
-    args.splice(lastC, 0, c);
+    if (color) {
+        args.splice(1, 0, c, 'color: inherit');
+        args.splice(lastC, 0, c);
+    }
 }
 /**
  * Create a debugger with the given `namespace`.
@@ -320,25 +316,8 @@ function createDebug(namespace, canUseColor) {
             // Anything else let's inspect with %O
             args.unshift('%O');
         }
-        // Apply any `formatters` transformations
-        let index = 0;
-        args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-            // If we encounter an escaped % then don't increase the array index
-            if (match !== '%%') {
-                index++;
-                const formatter = formatters[format];
-                if (typeof formatter === 'function') {
-                    const val = args[index];
-                    match = formatter.call(debug, val);
-                    // Now we need to remove `args[index]` since it's inlined in the `format`
-                    args.splice(index, 1);
-                    index--;
-                }
-            }
-            return match;
-        });
         // Apply env-specific formatting (colors, etc.)
-        formatArgs(namespace, color, args, diff);
+        formatArgs(debug, namespace, color, args, diff);
         const logFn = debug.log || createDebug.log;
         logFn.apply(debug, args);
     }
@@ -355,43 +334,7 @@ function createDebug(namespace, canUseColor) {
 Object.assign(createDebug, common);
 
 createDebug.enable('*'); // 对所有日志模式设置显示规则
-const $el = document.createElement('div');
-$el.setAttribute('class', 'debug-container');
-$el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
-    'position:fixed;top:0;right:0;padding:5px 10px;' + // pointer-events: none;' +
-    'background:rgba(0,0,0,.4);color:white;font-size:12px;';
-document.body.appendChild($el);
-createDebug.log = (...args) => {
-    // console.log('log-->', args);
-    const argsList = args.slice(1);
-    let isUseColor = false;
-    let index = 0;
-    let html = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-        match = argsList[index];
-        switch (format) {
-            // case 'O': // 在多行上漂亮地打印对象
-            // match = `<pre style="display:inline-block;vertical-align: top;margin:0;">${ JSON.stringify(match, null, 2) }</pre>`;
-            // break;
-            case 'O': // 在多行上漂亮地打印对象
-            case 'o': // 将对象漂亮地打印在一行上
-                match = `<code>${JSON.stringify(match)}</code>`;
-                break;
-            case 'c': // 颜色
-                match = `${isUseColor ? '</span>' : ''}<span style="${match}">`;
-                isUseColor = true;
-                break;
-            case '%':
-                match = '%';
-                index -= 1;
-                break;
-        }
-        index += 1;
-        return match;
-    });
-    if (isUseColor)
-        html += '</span>';
-    $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
-};
+// showInHtml(Debug);
 const debugTestFormatters = createDebug('test:format');
 const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
 debugTestFormatters('测试格式化字符规则:');
@@ -399,8 +342,7 @@ debugTestFormatters('对象漂亮的多行显示:%O', obj);
 debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
 debugTestFormatters('显示字符串: %o', '这是一个字符串变量的内容');
 debugTestFormatters('整数和浮点数显示: %d, %f', 123, 3.1415926);
-debugTestFormatters('json显示: %j', obj);
-debugTestFormatters('百分号不占用参数位: %%, test', 234);
+debugTestFormatters('百分号不占用参数位: %%, test', 234, 'test');
 const appLog = createDebug('test:log');
 appLog('log');
 const appLogger = createDebug('logger:debugger');
@@ -423,3 +365,47 @@ setTimeout(() => {
     logOutput('test output timeout');
     logCtrl('test ctrl timeout');
 }, 100);
+// 是否将日志显示在网页中
+// function showInHtml(Debug) {
+//   const $el = document.createElement('div');
+//   $el.setAttribute('class', 'debug-container');
+//   $el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
+//   'position:fixed;top:0;right:0;padding:5px 10px;' + // pointer-events: none;' +
+//   'background:rgba(0,0,0,.4);color:white;font-size:12px;';
+//   document.body.appendChild($el);
+//   Debug.log = (...args) => {
+//     // console.log('log-->', args);
+//     const argsList = args.slice(1);
+//     let isUseColor = false;
+//     let index = 0;
+//     let style = '';
+//     let html = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+//       match = argsList[index];
+//       if (index === 1) style = match;
+//       switch (format) {
+//       // case 'O': // 在多行上漂亮地打印对象
+//       // match = `<pre style="display:inline-block;vertical-align: top;margin:0;">${ JSON.stringify(match, null, 2) }</pre>`;
+//       // break;
+//         case 'O': // 在多行上漂亮地打印对象
+//         case 'o': // 将对象漂亮地打印在一行上
+//           match = `<code>${ JSON.stringify(match) }</code>`;
+//           break;
+//         case 'c': // 颜色
+//           match = `${isUseColor ? '</span>' : '' }<span style="${match}">`;
+//           isUseColor = true;
+//           break;
+//         case '%':
+//           match = '%';
+//           index -= 1;
+//           break;
+//       }
+//       index += 1;
+//       return match;
+//     });
+//     if (isUseColor) html += '</span>';
+//     argsList.slice(index).forEach((arg) => {
+//       html += `<span style="${style}"> ${arg}</span>`;
+//     });
+//     $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
+//   };
+// }

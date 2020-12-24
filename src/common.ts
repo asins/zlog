@@ -10,18 +10,7 @@ let skips = [];
 * 调试“ format”参数的特殊“％n”处理函数的映射。
 * 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
 */
-export const formatters = {
-/**
- * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
- */
-  j(v) {
-    try {
-      return JSON.stringify(v);
-    } catch (error) {
-      return `[JSONParseError]: ${ error.message}`;
-    }
-  },
-};
+export const formatters = {};
 
 export const colors = createColors();
 
