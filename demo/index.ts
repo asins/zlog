@@ -5,18 +5,18 @@ Debug.enable('*'); // 对所有日志模式设置显示规则
 
 show2Html(Debug);
 
-const debugTestFormatters = Debug('test:format');
-const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
-debugTestFormatters('测试格式化字符规则:');
-debugTestFormatters('对象漂亮的多行显示:%O', obj);
-debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
-debugTestFormatters('显示字符串: %o', '这是一个字符串变量的内容');
-debugTestFormatters('整数和浮点数显示: %d, %f', 123, 3.1415926);
-debugTestFormatters('百分号不占用参数位: %%, test', 234, 'test');
-debugTestFormatters('不支持的参数位情况: %t, tt-%x-tt', 234, 'test');
+// const debugTestFormatters = Debug('test:format');
+// const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
+// debugTestFormatters('测试格式化字符规则:');
+// debugTestFormatters('对象漂亮的多行显示:%O', obj);
+// debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
+// debugTestFormatters('显示字符串: %o', '这是一个字符串变量的内容');
+// debugTestFormatters('整数和浮点数显示: %d, %f', 123, 3.1415926);
+// debugTestFormatters('百分号不占用参数位: %%, test', 234, 'test');
+// debugTestFormatters('不支持的参数位情况: %t, tt-%x-tt', 234, 'test');
 
-const appLog = Debug('test:log');
-appLog('log');
+// const appLog = Debug('test:log');
+// appLog('log');
 
 // 不显示日志颜色
 const testNoColor = Debug('logger:debugger', false);

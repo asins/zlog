@@ -8,7 +8,7 @@ export default function show2Html(Debug) {
   'background:rgba(0,0,0,.4);color:white;font-size:12px;';
   document.body.appendChild($el);
   Debug.log = (...args) => {
-    // console.log('log-->', args);
+    console.log('log-->', args);
     const argsList = args.slice(1);
     let isUseColor = false;
     let index = 0;
@@ -42,6 +42,6 @@ export default function show2Html(Debug) {
       html += `<span style="${style}"> ${arg}</span>`;
     });
 
-    $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
+    $el.insertAdjacentHTML('beforeend', `<div class="item">${html}</div>`);
   };
 }
