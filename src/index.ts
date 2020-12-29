@@ -1,4 +1,4 @@
-import TypesDebug from '../typings/index.d';
+import { IDebug, IDebugger } from '../typings';
 import * as common from './common';
 
 const oneSecond = 1000;
@@ -94,7 +94,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
 
   function debug(...args) {
     // Disabled?
-    if (!(debug as TypesDebug.IDebugger).enabled) {
+    if (!(debug as IDebugger).enabled) {
       return;
     }
 
@@ -112,7 +112,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     // 应用特定于环境的格式
     formatArgs(debug, namespace, color, args, diff);
 
-    const logFn = (debug as TypesDebug.IDebugger).log || (createDebug as TypesDebug.IDebug).log;
+    const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
     logFn.apply(debug, args);
   }
 
@@ -128,8 +128,6 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
   return debug;
 }
 
-Object.assign(createDebug, common);
-
-export default createDebug as TypesDebug.Debug;
+export default Object.assign(createDebug, common);
 
 export { default as show2Html } from './show2Html';
