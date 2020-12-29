@@ -33,3 +33,5 @@ export as namespace debug;
 
 // eslint-disable-next-line
 declare var debug: debug.Debug & { debug: debug.Debug; default: debug.Debug };
+
+export const show2Html: (debug: debug.Debug) => void;
