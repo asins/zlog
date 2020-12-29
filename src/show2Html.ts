@@ -5,7 +5,7 @@ export default function show2Html(Debug) {
   $el.setAttribute('class', 'debug-container');
   $el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
   'position:fixed;top:0;right:0;padding:5px 10px;' +
-  'background:rgba(0,0,0,.4);color:white;font-size:12px;';
+  'background:rgba(0,0,0,.4);color:white;font-size:12px;z-index:99999;';
   document.body.appendChild($el);
   Debug.log = (...args) => {
     console.log('log-->', args);
