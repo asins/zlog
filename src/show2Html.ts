@@ -44,4 +44,5 @@ export default function show2Html(Debug) {
 
     $el.insertAdjacentHTML('beforeend', `<div class="item">${html}</div>`);
   };
+  return $el;
 }
