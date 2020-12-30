@@ -3,8 +3,9 @@ const storage = window.localStorage;
 /**
 * 当前活动的调试模式名称以及要跳过的名称。
 */
-let names = [];
-let skips = [];
+
+const names = [];
+const skips = [];
 
 /**
 * 调试“ format”参数的特殊“％n”处理函数的映射。
@@ -119,8 +120,9 @@ export function useColors() {
 export function enable(namespaces) {
   save(namespaces);
 
-  names = [];
-  skips = [];
+  // 清空数组并保留引用句柄
+  names.length = 0;
+  skips.length = 0;
 
   let i;
   const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
