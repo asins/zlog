@@ -125,7 +125,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     },
   });
 
-  return debug;
+  return debug as IDebugger;
 }
 
 export default Object.assign(createDebug, common);
