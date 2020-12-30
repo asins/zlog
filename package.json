@@ -1,6 +1,6 @@
 {
   "name": "@ali/zlog",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "用于在控制台中查看运行日志，按URL中DEBUG参数来决定是否显示",
   "main": "src/index.ts",
   "types": "typings/index.d.ts",
