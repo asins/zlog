@@ -36,7 +36,7 @@ export default function show2Html(Debug, cls?: string) {
     if (isUseColor) html += '</span>';
 
     argsList.slice(index).forEach((arg) => {
-      html += `<span style="${style}"> ${arg}</span>`;
+      html += `<span style="${style}"> ${typeof arg === 'object' ? JSON.stringify(arg) : arg}</span>`;
     });
 
     $el.insertAdjacentHTML('beforeend', `<div class="item">${html}</div>`);
