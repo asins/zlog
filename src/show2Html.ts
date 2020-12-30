@@ -5,7 +5,7 @@ export default function show2Html(Debug, cls?: string) {
   $el.setAttribute('class', cls || 'debug-container');
   document.body.appendChild($el);
   Debug.log = (...args) => {
-    console.log('log-->', args);
+    // console.log('log-->', args);
     const argsList = args.slice(1);
     let isUseColor = false;
     let index = 0;
