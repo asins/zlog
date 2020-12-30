@@ -11,11 +11,9 @@ interface Formatters {
 
 export interface IDebug {
   (namespace: string, color?: boolean | string): IDebugger;
-  coerce: (val: any) => any;
   disable: () => string;
   enable: (namespaces: string) => void;
   enabled: (namespaces: string) => boolean;
-  selectColor: (namespaces: string) => string;
   log: (...args: any[]) => any;
 
   formatters: Formatters;
@@ -26,3 +24,10 @@ const createDebug: IDebug;
 export default createDebug;
 
 export const show2Html: (debug: IDebug) => void;
+
+declare global {
+  interface Window {
+    // 多个文件时共用debug配置
+    __ZLOG_COMMON: IDebug;
+  }
+}

@@ -1,5 +1,5 @@
 import { IDebug, IDebugger } from '../typings';
-import * as common from './common';
+import { common, useColors, coerce, selectColor } from './common';
 
 const oneSecond = 1000;
 const oneMinute = oneSecond * 60;
@@ -88,8 +88,8 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
 
   let color: string;
 
-  if (canUseColor === true || (canUseColor !== false && common.useColors())) {
-    color = common.selectColor(namespace);
+  if (canUseColor === true || (canUseColor !== false && useColors())) {
+    color = selectColor(namespace);
   }
 
   function debug(...args) {
@@ -102,7 +102,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     const diff = currTime - (prevTime || currTime);
     prevTime = currTime;
 
-    args[0] = common.coerce(args[0]);
+    args[0] = coerce(args[0]);
 
     if (typeof args[0] !== 'string') {
       // Anything else let's inspect with %O
@@ -128,6 +128,13 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
   return debug as IDebugger;
 }
 
-export default Object.assign(createDebug, common);
+// 让多JS文件时共用一份配置
+let winZlog: IDebug = window.__ZLOG_COMMON;
+if (!winZlog) {
+  winZlog = Object.assign(createDebug, common);
+  window.__ZLOG_COMMON = winZlog;
+}
+
+export default winZlog;
 
 export { default as show2Html } from './show2Html';

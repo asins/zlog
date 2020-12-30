@@ -1,19 +1,29 @@
 const storage = window.localStorage;
 
 /**
-* 当前活动的调试模式名称以及要跳过的名称。
-*/
-
+ * 当前活动的调试模式名称以及要跳过的名称。
+ */
 const names = [];
 const skips = [];
 
-/**
+const colors = createColors();
+
+export const common = {
+  /**
 * 调试“ format”参数的特殊“％n”处理函数的映射。
 * 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
 */
-export const formatters = {};
+  formatters: {},
 
-export const colors = createColors();
+  /**
+   * @api public
+   */
+  log: console.log || (() => {}),
+
+  enable,
+  enabled,
+  disable,
+};
 
 function createColors() {
   const colors = [];
@@ -117,7 +127,7 @@ export function useColors() {
  * @param {String} namespaces
  * @api public
  */
-export function enable(namespaces) {
+function enable(namespaces) {
   save(namespaces);
 
   // 清空数组并保留引用句柄
@@ -150,7 +160,7 @@ export function enable(namespaces) {
   * @return {String} namespaces
   * @api public
   */
-export function disable() {
+function disable() {
   const namespaces = [
     ...names.map(toNamespace),
     ...skips.map(toNamespace).map((namespace) => `-${ namespace}`),
@@ -166,7 +176,7 @@ export function disable() {
  * @return {Boolean}
  * @api public
  */
-export function enabled(name) {
+function enabled(name) {
   if (name[name.length - 1] === '*') {
     return true;
   }
@@ -233,11 +243,6 @@ export function selectColor(namespace) {
 
   return colors[Math.abs(hash) % colors.length];
 }
-
-/**
- * @api public
- */
-export const log = console.log || (() => {});
 
 // 设置默认显示的日志
 enable(load());
