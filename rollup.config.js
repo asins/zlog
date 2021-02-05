@@ -3,11 +3,15 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import serve from 'rollup-plugin-serve';
 
+const rollupEnv = process.env.ROLLUP_ENV;
+console.log('rollup env:', rollupEnv);
+
 export default [
   {
     input: 'src/index.ts',
     output: [
       { file: 'dist/index.js' },
+      { file: 'dist/index.esm.js', format: 'esm' },
     ],
     plugins: [
       typescript(),
@@ -24,7 +28,7 @@ export default [
       typescript(),
       resolve({ browser: true }),
       commonjs(),
-      serve({
+      rollupEnv !== 'prod' && serve({
         open: false,
         openPage: 'index.html',
         contentBase: ['./demo'],

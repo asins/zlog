@@ -2,7 +2,7 @@
   "name": "@ali/zlog",
   "version": "0.0.13",
   "description": "用于在控制台中查看运行日志，按URL中DEBUG参数来决定是否显示",
-  "main": "src/index.ts",
+  "main": "dist/index.esm.js",
   "types": "typings/index.d.ts",
   "dependencies": {},
   "devDependencies": {
@@ -23,7 +23,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx rollup -c ./rollup.config.js -w"
+    "dev": "npx rollup -c ./rollup.config.js -w",
+    "build": "ROLLUP_ENV=prod npx rollup -c ./rollup.config.js"
   },
   "keywords": [
     "console",
