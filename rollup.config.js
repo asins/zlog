@@ -11,7 +11,8 @@ export default [
     input: 'src/index.ts',
     output: [
       { file: 'dist/index.js' },
-      { file: 'dist/index.esm.js', format: 'esm' },
+      // { file: 'dist/index.cjs.js', format: 'cjs' },
+      { file: 'dist/index.esm.js', format: 'es' },
     ],
     plugins: [
       typescript(),

@@ -136,5 +136,3 @@ if (!winZlog) {
 }
 
 export default winZlog;
-
-export { default as show2Html } from './show2Html';
