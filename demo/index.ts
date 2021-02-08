@@ -1,5 +1,5 @@
-import Debug from '../src/index';
-import show2Html from '../src/show2Html';
+import Debug from '../index';
+import show2Html from '../show2Html';
 import queryString from 'query-string';
 
 const pageUrlParams = queryString.parse(window.location.search, {

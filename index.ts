@@ -1,4 +1,4 @@
-import { IDebug, IDebugger } from '../typings';
+import { IDebug, IDebugger } from './typings';
 import { common, useColors, coerce, selectColor } from './common';
 
 const oneSecond = 1000;
@@ -136,3 +136,5 @@ if (!winZlog) {
 }
 
 export default winZlog;
+
+// export { default as show2Html } from './show2Html';

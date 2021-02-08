@@ -8,16 +8,24 @@ console.log('rollup env:', rollupEnv);
 
 export default [
   {
-    input: 'src/index.ts',
+    input: 'index.ts',
     output: [
-      { file: 'dist/index.js' },
-      // { file: 'dist/index.cjs.js', format: 'cjs' },
-      { file: 'dist/index.esm.js', format: 'es' },
+      { file: 'index.js' },
+      { file: 'index.esm.js', format: 'es' },
     ],
     plugins: [
       typescript(),
       resolve({ browser: true }),
       commonjs(),
+    ],
+  },
+  {
+    input: 'show2Html.ts',
+    output: [
+      { file: 'show2Html.js', format: 'es' },
+    ],
+    plugins: [
+      typescript(),
     ],
   },
   {
