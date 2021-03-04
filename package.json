@@ -25,6 +25,10 @@
     "dev": "npx rollup -c ./rollup.config.js -w",
     "build": "ROLLUP_ENV=prod npx rollup -c ./rollup.config.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asins/zlog.git"
+  },
   "keywords": [
     "console",
     "debug",
