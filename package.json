@@ -1,7 +1,7 @@
 {
-  "name": "@ali/zlog",
+  "name": "@asins/zlog",
   "version": "0.0.18",
-  "description": "用于在控制台中查看运行日志，按URL中DEBUG参数来决定是否显示",
+  "description": "A tiny JavaScript debugging utility, Works in web browsers.",
   "main": "index.js",
   "module": "index.esm.js",
   "types": "typings/index.d.ts",
@@ -28,12 +28,8 @@
   "keywords": [
     "console",
     "debug",
-    "云游戏",
     "TypeScript"
   ],
-  "publishConfig": {
-    "registry": "https://registry.npm.alibaba-inc.com"
-  },
-  "author": "asins",
+  "author": "asins<asinsimple@gmail.com>",
   "license": "ISC"
 }

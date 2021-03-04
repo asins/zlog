@@ -1,4 +1,11 @@
-用于在在浏览器中显示日志，项目从[debug](https://github.com/visionmedia/debug/)修改而来，**减小仓库文件大小**更适用浏览器环境。
+> A tiny JavaScript debugging utility, Works in web browsers.
+
+用于在浏览器中显示日志，项目从[debug](https://github.com/visionmedia/debug/)修改而来，**减小仓库文件大小**更适用浏览器环境。
+
+### 改进点
+
+- 支持多JS文件共用配置定义。
+- 提供在页面中显示日志的方法。
 
 ### namespace规则
 
@@ -17,7 +24,7 @@ namespace的特性在设置显示哪些日志时使用，比如：
 const createDebug = require('debug');
 
 // 设置日志显示规则
-createDebug.enable('name:*, -name:input');
+createDebug.enable('name:*,-name:input');
 
 // 定义debug
 const input = createDebug('name:input');
@@ -59,56 +66,12 @@ debug('this is hex: %h', new Buffer('hello world'));
 
 ### 在网页中显示日志
 
-库中已将`log`方法暴露出来，修改后就可以做到在网页中显示。例如：
+库中已将`log`方法对外暴露，覆盖后就能按自己的意愿来显示，项目中提供了一种在网页中显示日志的方法，再结合URL参数开关就可在H5端显示漂亮的日志了。
 
-```js
-import Debug from 'asins/debug';
-show2Html(Debug);
+```
+import createDebug, { show2Html } from '@asins/zlog';
 
-// 是否将日志显示在网页中
-function show2Html(Debug) {
-  const $el = document.createElement('div');
-  $el.setAttribute('class', 'debug-container');
-  $el.style.cssText = 'width:40vw;max-height:90vh;overflow:auto;' +
-  'position:fixed;top:0;right:0;padding:5px 10px;' +
-  'background:rgba(0,0,0,.4);color:white;font-size:12px;';
-  document.body.appendChild($el);
-  Debug.log = (...args) => {
-    // console.log('log-->', args);
-    const argsList = args.slice(1);
-    let isUseColor = false;
-    let index = 0;
-    let style = '';
-    let html = args[0].replace(/%([diufFeEgGxXoscpaAn%])/g, (match, format) => {
-      match = argsList[index];
-      if (index === 1) style = match;
-      switch (format) {
-      // case 'O': // 在多行上漂亮地打印对象
-      // match = `<pre style="display:inline-block;vertical-align: top;margin:0;">${ JSON.stringify(match, null, 2) }</pre>`;
-      // break;
-        case 'O': // 在多行上漂亮地打印对象
-        case 'o': // 将对象漂亮地打印在一行上
-          match = `<code>${ JSON.stringify(match) }</code>`;
-          break;
-        case 'c': // 颜色
-          match = `${isUseColor ? '</span>' : '' }<span style="${match}">`;
-          isUseColor = true;
-          break;
-        case '%':
-          match = '%';
-          index -= 1;
-          break;
-      }
-      index += 1;
-      return match;
-    });
-    if (isUseColor) html += '</span>';
-
-    argsList.slice(index).forEach((arg) => {
-      html += `<span style="${style}"> ${arg}</span>`;
-    });
-
-    $el.insertAdjacentHTML('afterbegin', `<div class="item">${html}</div>`);
-  };
+if(/\bdebugType=html\b/.test(window.location.search)) {
+  show2Html(Debug);
 }
 ```
