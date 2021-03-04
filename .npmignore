@@ -4,3 +4,5 @@ tsconfig.json
 .vscode/
 package-lock.json
 node_modules/
+demo.jpg
+demo/
