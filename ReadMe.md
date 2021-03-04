@@ -24,7 +24,7 @@
 namespace 的特性在设置显示哪些日志时使用，比如：
 
 ```js
-const createDebug = require('debug');
+import createDebug from 'zlog-web';
 
 // 设置日志显示规则
 createDebug.enable('name:*,-name:input');
@@ -56,7 +56,7 @@ input('test ctrl');
 修改格式对象：
 
 ```js
-const createDebug = require('debug');
+import createDebug from 'zlog-web';
 createDebug.formatters.h = (v) => {
   return v.toString('hex');
 }
