@@ -1,10 +1,11 @@
 const storage = window.localStorage;
+const colorData = '00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F39C39F3C03C33C63C93CC3CF60C60F63C63F6C06C390C90F93C93F9C09C3C00C03C06C09C0CC0FC30C33C36C39C3CC3FC60C63C90C93CC0CC3F00F03F06F09F0CF0FF30F33F36F39F3CF3FF60F63F90F93FC0FC3';
 /**
  * 当前活动的调试模式名称以及要跳过的名称。
  */
 const names = [];
 const skips = [];
-const colors = createColors();
+const colors = colorData.match(/\w{3}/g).map(c3 => '#' + c3.replace(/\w/g, "$&$&"));
 const common = {
     /**
   * 调试“ format”参数的特殊“％n”处理函数的映射。
@@ -19,22 +20,6 @@ const common = {
     enabled,
     disable,
 };
-function createColors() {
-    const colors = [];
-    for (let a = 0; a <= 0xf; a += 3) {
-        const a16 = a.toString(16);
-        for (let b = 0; b <= 0xf; b += 3) {
-            const b16 = b.toString(16);
-            for (let c = 0; c <= 0xf; c += 3) {
-                const c16 = c.toString(16);
-                if (!(a === 0 && b <= 9 && c < 0xc)
-                    && !(a > 9 && b > 9 && c > 9))
-                    colors.push(`#${a16}${a16}${b16}${b16}${c16}${c16}`);
-            }
-        }
-    }
-    return colors;
-}
 /**
  * Save `namespaces`.
  *
@@ -69,10 +54,9 @@ function load() {
     catch (error) {
         // Swallow
         // XXX (@Qix-) should we be logging these?
-        // If debug isn't set in LS, and we're in Electron, try to load $DEBUG
-        if (typeof process !== 'undefined' && 'env' in process) {
-            r = process.env.DEBUG;
-        }
+        // If debug isn't set in LS, try to load by url??
+        // const urlR = /\bDEBUG=([^&#$]+)/.exec(window.location.search);
+        // if(urlR) r = decodeURIComponent(urlR[1]);
     }
     return r;
 }
