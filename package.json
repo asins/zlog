@@ -1,11 +1,10 @@
 {
   "name": "@ali/zlog",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "用于在控制台中查看运行日志，按URL中DEBUG参数来决定是否显示",
   "main": "index.js",
   "module": "index.esm.js",
   "types": "typings/index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.1",
