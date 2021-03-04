@@ -72,7 +72,8 @@ debug('this is hex: %h', new Buffer('hello world'));
 库中已将`log`方法对外暴露，覆盖后就能按自己的意愿来显示，项目中提供了一种在网页中显示日志的方法，再结合 URL 参数开关就可在 H5 端显示漂亮的日志了。
 
 ```js
-import createDebug, { show2Html } from 'zlog-web';
+import createDebug from 'zlog-web';
+import show2Html from 'zlog-web/show2Html';
 
 if(/\bdebugType=html\b/.test(window.location.search)) {
   show2Html(Debug);
