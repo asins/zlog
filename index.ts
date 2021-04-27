@@ -11,18 +11,19 @@ const oneHour = oneMinute * 60;
  */
 function humanize(ms) {
   ms = parseInt(ms, 10);
+  let suff = 'ms';
   if (ms >= oneHour) {
-    return `${Math.round(ms / oneHour) }h`;
+    ms /= oneHour;
+    suff = 'h';
+  } else if (ms >= oneMinute) {
+    ms /= oneMinute;
+    suff = 'm';
+  } else if (ms >= oneSecond) {
+    ms /= oneSecond;
+    suff = 's';
   }
-  if (ms >= oneMinute) {
-    return `${Math.round(ms / oneMinute) }m`;
-  }
-  if (ms >= oneSecond) {
-    return `${Math.round(ms / oneSecond) }s`;
-  }
-  return `${ms }ms`;
+  return `${Math.round(ms * 10) / 10}${suff}`;
 }
-
 
 /**
  * Colorize log arguments if enabled.
@@ -30,11 +31,9 @@ function humanize(ms) {
  * @api public
  */
 
-function formatArgs(self, namespace, color, args, diff) {
-  args[0] = `${(color ? '%c' : '') +
-    namespace + (color ? ' %c' : ' ') +
-    args[0] + (color ? '%c ' : ' ')
-    }+${humanize(diff)}`;
+function formatArgs(self, namespace, color, args, diffTime) {
+  const isColorSpace = color ? ' %c' : ' ';
+  args[0] = `${color ? '%c' : ''}${namespace}${isColorSpace}${args[0]}${isColorSpace}+${humanize(diffTime)}`;
 
   const c = `color: ${color}`;
 
@@ -99,7 +98,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     }
 
     const currTime = performance.now();
-    const diff = currTime - (prevTime || currTime);
+    const diffTime = currTime - (prevTime || currTime);
     prevTime = currTime;
 
     args[0] = coerce(args[0]);
@@ -110,7 +109,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
     }
 
     // 应用特定于环境的格式
-    formatArgs(debug, namespace, color, args, diff);
+    formatArgs(debug, namespace, color, args, diffTime);
 
     const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
     logFn.apply(debug, args);

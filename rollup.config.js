@@ -31,7 +31,7 @@ export default [
   {
     input: 'demo/index.ts',
     output: [
-      { file: 'demo/demo.js' },
+      { file: 'demo/demo.js', format: 'umd' },
     ],
     plugins: [
       typescript(),

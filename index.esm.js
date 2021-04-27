@@ -5,7 +5,7 @@ const colorData = '00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F3
  */
 const names = [];
 const skips = [];
-const colors = colorData.match(/\w{3}/g).map(c3 => '#' + c3.replace(/\w/g, "$&$&"));
+const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, '$&$&')}`);
 const common = {
     /**
   * 调试“ format”参数的特殊“％n”处理函数的映射。
@@ -211,26 +211,29 @@ const oneHour = oneMinute * 60;
  */
 function humanize(ms) {
     ms = parseInt(ms, 10);
+    let suff = 'ms';
     if (ms >= oneHour) {
-        return `${Math.round(ms / oneHour)}h`;
+        ms /= oneHour;
+        suff = 'h';
     }
-    if (ms >= oneMinute) {
-        return `${Math.round(ms / oneMinute)}m`;
+    else if (ms >= oneMinute) {
+        ms /= oneMinute;
+        suff = 'm';
     }
-    if (ms >= oneSecond) {
-        return `${Math.round(ms / oneSecond)}s`;
+    else if (ms >= oneSecond) {
+        ms /= oneSecond;
+        suff = 's';
     }
-    return `${ms}ms`;
+    return `${Math.round(ms * 10) / 10}${suff}`;
 }
 /**
  * Colorize log arguments if enabled.
  *
  * @api public
  */
-function formatArgs(self, namespace, color, args, diff) {
-    args[0] = `${(color ? '%c' : '') +
-        namespace + (color ? ' %c' : ' ') +
-        args[0] + (color ? '%c ' : ' ')}+${humanize(diff)}`;
+function formatArgs(self, namespace, color, args, diffTime) {
+    const isColorSpace = color ? ' %c' : ' ';
+    args[0] = `${color ? '%c' : ''}${namespace}${isColorSpace}${args[0]}${isColorSpace}+${humanize(diffTime)}`;
     const c = `color: ${color}`;
     // The final "%c" is somewhat tricky, because there could be other
     // arguments passed either before or after the %c, so we need to
@@ -285,7 +288,7 @@ function createDebug(namespace, canUseColor) {
             return;
         }
         const currTime = performance.now();
-        const diff = currTime - (prevTime || currTime);
+        const diffTime = currTime - (prevTime || currTime);
         prevTime = currTime;
         args[0] = coerce(args[0]);
         if (typeof args[0] !== 'string') {
@@ -293,7 +296,7 @@ function createDebug(namespace, canUseColor) {
             args.unshift('%O');
         }
         // 应用特定于环境的格式
-        formatArgs(debug, namespace, color, args, diff);
+        formatArgs(debug, namespace, color, args, diffTime);
         const logFn = debug.log || createDebug.log;
         logFn.apply(debug, args);
     }

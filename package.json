@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx rollup -c ./rollup.config.js -w",
+    "start": "npx rollup -c ./rollup.config.js -w",
     "build": "ROLLUP_ENV=prod npx rollup -c ./rollup.config.js"
   },
   "repository": {

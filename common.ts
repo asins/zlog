@@ -7,7 +7,7 @@ const colorData = '00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F3
 const names = [];
 const skips = [];
 
-const colors = colorData.match(/\w{3}/g).map(c3 => '#'+c3.replace(/\w/g, "$&$&"));
+const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, '$&$&')}`);
 
 export const common = {
   /**

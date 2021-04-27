@@ -14,12 +14,32 @@ Debug.enable('*, -name:input');
 // 测试排除特定日志
 const logInput = Debug('name:input');
 const logOutput = Debug('name:output');
-logInput('test input'); // 当前namespace中不会显示
-logOutput('test output');
+const logClose = Debug('name:close');
+logInput('logInput日志namespace不允许输出，此日志未能输出'); // 当前namespace中不会显示
+logOutput('logOutput日志namespace不允许输出，此日志未能输出');
+logClose('logClose日志namespace可见');
 
 // 测试日志字符中的输出格式
 const debugTestFormatters = Debug('test:format');
 const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
+debugTestFormatters('测试格式化字符规则:');
 debugTestFormatters('测试格式化字符规则:');
 debugTestFormatters('对象漂亮的多行显示:%O', obj);
 debugTestFormatters('对象漂亮的显示在一行中:%o', obj);
@@ -33,13 +53,14 @@ const testNoColor = Debug('logger:debugger', false);
 testNoColor('测试不使用颜色: %s', '此内容无特殊颜色');
 
 // 测试日志间隔时间
-logInput('logInput日志模式是否允许显示:', logInput.enabled);
 setTimeout(() => {
   logInput.enabled = true; // 单独针对logInput模式开启日志显示
   console.log('通过namespace查询日志模式是否显示(不支持通配符)', Debug.enabled('name:output'));
-  logInput('test input timeout');
+  logInput('namespace enabled设置为true后，日志可见了，test input timeout');
   logOutput('test output timeout');
-}, 100);
+  logClose.enabled = false; // 关闭logClose日志输出
+  logClose('此日志不可见');
+}, 1000);
 
 setTimeout(() => {
 // 对所有日志模式设置显示规则
