@@ -1,7 +1,7 @@
-import typescript from 'rollup-plugin-typescript2';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import serve from 'rollup-plugin-serve';
+import esbuild from 'rollup-plugin-esbuild';
 
 const rollupEnv = process.env.ROLLUP_ENV;
 console.log('rollup env:', rollupEnv);
@@ -14,9 +14,13 @@ export default [
       { file: 'index.esm.js', format: 'es' },
     ],
     plugins: [
-      typescript(),
       resolve({ browser: true }),
       commonjs(),
+      esbuild({
+        include: /\.[jt]sx?$/,
+        minify: false,
+        target: 'esnext',
+      }),
     ],
   },
   {
@@ -25,7 +29,11 @@ export default [
       { file: 'show2Html.js', format: 'es' },
     ],
     plugins: [
-      typescript(),
+      esbuild({
+        include: /\.[jt]sx?$/,
+        minify: false,
+        target: 'esnext',
+      }),
     ],
   },
   {
@@ -34,9 +42,13 @@ export default [
       { file: 'demo/demo.js', format: 'umd' },
     ],
     plugins: [
-      typescript(),
       resolve({ browser: true }),
       commonjs(),
+      esbuild({
+        include: /\.[jt]sx?$/,
+        minify: false,
+        target: 'esnext',
+      }),
       rollupEnv !== 'prod' && serve({
         open: false,
         openPage: 'index.html',

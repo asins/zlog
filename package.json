@@ -1,6 +1,6 @@
 {
   "name": "zlog-web",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "A tiny JavaScript debugging utility, Works in web browsers.",
   "main": "index.js",
   "module": "index.esm.js",
@@ -17,8 +17,8 @@
     "query-string": "^6.13.7",
     "rollup": "^2.35.1",
     "rollup-plugin-serve": "^1.1.0",
-    "rollup-plugin-typescript2": "^0.29.0",
-    "typescript": "^3.9.7"
+    "esbuild": "^0.11.19",
+    "rollup-plugin-esbuild": "^4.2.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

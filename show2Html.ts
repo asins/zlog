@@ -60,7 +60,7 @@ export default function show2Html(Debug, cls?: string) {
         $logs.classList.remove('disable');
       }
     }
-    console.log($item, name);
+    // console.log($item, name);
   });
 
   Debug.log = (...args) => {
