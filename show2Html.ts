@@ -2,7 +2,7 @@
 // 是否将日志显示在网页中
 export default function show2Html(Debug, cls?: string) {
   const $el = document.createElement('div');
-  const dockSideList = ['bottom', 'all', 'mini'];
+  const dockSideList = ['bottom', 'mini', 'all'];
   let curdockSideIndex = 0;
   const className = cls || `zlog-${Math.trunc(Math.random() * Date.now()).toString(32)}`;
   $el.classList.add(className);
@@ -14,8 +14,9 @@ export default function show2Html(Debug, cls?: string) {
   .${className}.all{width:100%;height:100%;top:0;left:0}
   .${className}.mini{width:0;height:0;}
   .${className}.mini .tools-${className} .logo{position:fixed;bottom:5px;right:5px}
+  .${className}.mini .logs{display:none}
   .${className} .tools-${className}{position:absolute;width:100%;display:flex;align-items:center;justify-content:flex-end;background:rgba(0,0,0,.6)}
-  .${className} .tools-${className} .logo{flex:none;user-select:none;width:16px;height:16px;line-height:16px;font-size:16px;display:inline-block;text-align:center;border:1px solid rgba(0,0,0,.8);background:rgba(0,0,0,.8);border-radius:5px;overflow:hidden;cursor:pointer}
+  .${className} .tools-${className} .logo{flex:none;user-select:none;width:22px;height:22px;line-height:22px;font-size:18px;display:inline-block;text-align:center;background:rgba(0,0,0,.8);border-radius:5px;overflow:hidden;cursor:pointer}
   .${className} .tools-${className} .filter{margin:0 6px;flex:auto;overflow:auto;white-space:nowrap}
   .${className} .tools-${className} .filter .item{margin-right:3px;line-height:18px;padding:2px 4px;display:inline-block;cursor:pointer}
   .${className} .tools-${className} .filter .select{background:#000;position:relative}
