@@ -1,10 +1,20 @@
+export type IDockValue = 'bottom' | 'mini' | 'all';
+export interface Show2HtmlOptions {
+  /** Debug显示区css样式名 */
+  cls?: string;
+  /** 当前显示方式 */
+  dock?: IDockValue;
+  /** Debug插入的Dom */
+  container?: HTMLElement;
+}
 
 // 是否将日志显示在网页中
-export default function show2Html(Debug, cls?: string) {
+export default function show2Html(Debug, options: Show2HtmlOptions = {}) {
+  const dockSideList = ['mini', 'bottom', 'all'];
   const $el = document.createElement('div');
-  const dockSideList = ['bottom', 'mini', 'all'];
-  let curdockSideIndex = 0;
-  const className = cls || `zlog-${Math.trunc(Math.random() * Date.now()).toString(32)}`;
+  let curdockSideIndex = dockSideList.indexOf(options.dock);
+  if (curdockSideIndex < 0) curdockSideIndex = 0;
+  const className = options.cls || `zlog-${Math.trunc(Math.random() * Date.now()).toString(32)}`;
   $el.classList.add(className);
   $el.classList.add(dockSideList[curdockSideIndex]);
   $el.insertAdjacentHTML('afterbegin', `<style>
@@ -14,7 +24,8 @@ export default function show2Html(Debug, cls?: string) {
   .${className}.all{width:100%;height:100%;top:0;left:0}
   .${className}.mini{width:0;height:0;}
   .${className}.mini .tools-${className} .logo{position:fixed;bottom:5px;right:5px}
-  .${className}.mini .logs{display:none}
+  .${className}.mini .logs,
+  .${className}.mini .filter{display:none}
   .${className} .tools-${className}{position:absolute;width:100%;display:flex;align-items:center;justify-content:flex-end;background:rgba(0,0,0,.6)}
   .${className} .tools-${className} .logo{flex:none;user-select:none;width:22px;height:22px;line-height:22px;font-size:18px;display:inline-block;text-align:center;background:rgba(0,0,0,.8);border-radius:5px;overflow:hidden;cursor:pointer}
   .${className} .tools-${className} .filter{margin:0 6px;flex:auto;overflow:auto;white-space:nowrap}
@@ -26,7 +37,7 @@ export default function show2Html(Debug, cls?: string) {
   </style>
   <div class="tools-${className}"><div class="filter"></div><div class="logo">Z</div></div>
   <div class="logs"></div>`);
-  document.body.appendChild($el);
+  (options.container || document.body).appendChild($el);
   const $style = $el.querySelector('style');
   const $logs = $el.querySelector('.logs');
 
@@ -121,3 +132,4 @@ export default function show2Html(Debug, cls?: string) {
 function getClassName(str) {
   return str.replace(/[^a-z0-9-]/ig, '-');
 }
+
