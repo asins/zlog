@@ -6,3 +6,6 @@ package-lock.json
 node_modules/
 demo.jpg
 demo/
+*.ts
+rollup.config.js
+.eslintrc
