@@ -1,5 +1,5 @@
 import { IDebug, IDebugger } from './typings';
-import { common, useColors, coerce, selectColor } from './common';
+import { common, coerce, selectColor } from './common';
 
 const oneSecond = 1000;
 const oneMinute = oneSecond * 60;
@@ -78,7 +78,7 @@ function formatArgs(self, namespace, color, args, diffTime) {
  * @return {Function}
  * @api public
  */
-function createDebug(namespace: string, canUseColor?: boolean | string) {
+function createDebug(namespace: string, canUseColor?: boolean) {
   // 上次日志记录的时间
   let prevTime: number;
 
@@ -87,7 +87,7 @@ function createDebug(namespace: string, canUseColor?: boolean | string) {
 
   let color: string;
 
-  if (canUseColor === true || (canUseColor !== false && useColors())) {
+  if (common.canUseColor === true && canUseColor !== false) {
     color = selectColor(namespace);
   }
 

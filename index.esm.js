@@ -5,6 +5,7 @@ const skips = [];
 const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, "$&$&")}`);
 const common = {
   formatters: {},
+  canUseColor: true,
   log: console.log || (() => {
   }),
   enable,
@@ -28,16 +29,6 @@ function load() {
   } catch (error) {
   }
   return r;
-}
-function useColors() {
-  const win = window;
-  if (typeof win !== "undefined" && win.process && (win.process.type === "renderer" || win.process.__nwjs)) {
-    return true;
-  }
-  if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-    return false;
-  }
-  return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof win !== "undefined" && win.console && (win.console.firebug || win.console.exception && win.console.table) || typeof navigator !== "undefined" && navigator.userAgent && (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
 }
 function enable(namespaces) {
   save(namespaces);
@@ -152,7 +143,7 @@ function createDebug(namespace, canUseColor) {
   let prevTime;
   let enableOverride = null;
   let color;
-  if (canUseColor === true || canUseColor !== false && useColors()) {
+  if (common.canUseColor === true && canUseColor !== false) {
     color = selectColor(namespace);
   }
   function debug(...args) {

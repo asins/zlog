@@ -10,7 +10,7 @@ export default [
   {
     input: 'index.ts',
     output: [
-      { file: 'index.js' },
+      { file: 'index.js', format: 'cjs' },
       { file: 'index.esm.js', format: 'es' },
     ],
     plugins: [

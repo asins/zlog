@@ -11,10 +11,15 @@ const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, '$&$&
 
 export const common = {
   /**
-* 调试“ format”参数的特殊“％n”处理函数的映射。
-* 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
-*/
+   * 调试“ format”参数的特殊“％n”处理函数的映射。
+   * 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
+   */
   formatters: {},
+
+  /**
+   * 对全局日志设置是否允许使用颜色
+   */
+  canUseColor: true,
 
   /**
    * @api public
@@ -66,41 +71,6 @@ export function load() {
 
 
   return r;
-}
-
-/**
- * Currently only WebKit-based Web Inspectors, Firefox >= v31,
- * and the Firebug extension (any Firefox version) are known
- * to support "%c" CSS customizations.
- *
- * TODO: add a `localStorage` variable to explicitly enable/disable colors
- */
-export function useColors() {
-  // NB: In an Electron preload script, document will be defined but not fully
-  // initialized. Since we know we're in Chrome, we'll just detect this case
-  // explicitly
-  const win = window as any;
-  if (typeof win !== 'undefined' && win.process && (win.process.type === 'renderer' || win.process.__nwjs)) {
-    return true;
-  }
-
-  // Internet Explorer and Edge do not support colors.
-  if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-    return false;
-  }
-
-  // Is webkit? http://stackoverflow.com/a/16459606/376773
-  // document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
-  return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && (document.documentElement.style as any).WebkitAppearance) ||
-    // Is firebug? http://stackoverflow.com/a/398120/376773
-    (typeof win !== 'undefined' && win.console && ((win.console as any).firebug || (win.console.exception && win.console.table))) ||
-    (typeof navigator !== 'undefined' && navigator.userAgent && (
-      // Is firefox >= v31?
-      // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-      (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31) ||
-      // Double check webkit in userAgent just in case we are in a worker
-      navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)
-    ));
 }
 
 /**

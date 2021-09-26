@@ -1,3 +1,5 @@
+'use strict';
+
 const storage = window.localStorage;
 const colorData = "00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F39C39F3C03C33C63C93CC3CF60C60F63C63F6C06C390C90F93C93F9C09C3C00C03C06C09C0CC0FC30C33C36C39C3CC3FC60C63C90C93CC0CC3F00F03F06F09F0CF0FF30F33F36F39F3CF3FF60F63F90F93FC0FC3";
 const names = [];
@@ -5,6 +7,7 @@ const skips = [];
 const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, "$&$&")}`);
 const common = {
   formatters: {},
+  canUseColor: true,
   log: console.log || (() => {
   }),
   enable,
@@ -28,16 +31,6 @@ function load() {
   } catch (error) {
   }
   return r;
-}
-function useColors() {
-  const win = window;
-  if (typeof win !== "undefined" && win.process && (win.process.type === "renderer" || win.process.__nwjs)) {
-    return true;
-  }
-  if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-    return false;
-  }
-  return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof win !== "undefined" && win.console && (win.console.firebug || win.console.exception && win.console.table) || typeof navigator !== "undefined" && navigator.userAgent && (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
 }
 function enable(namespaces) {
   save(namespaces);
@@ -152,7 +145,7 @@ function createDebug(namespace, canUseColor) {
   let prevTime;
   let enableOverride = null;
   let color;
-  if (canUseColor === true || canUseColor !== false && useColors()) {
+  if (common.canUseColor === true && canUseColor !== false) {
     color = selectColor(namespace);
   }
   function debug(...args) {
@@ -187,4 +180,4 @@ if (!winZlog) {
 }
 var winZlog$1 = winZlog;
 
-export default winZlog$1;
+module.exports = winZlog$1;

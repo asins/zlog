@@ -2,7 +2,6 @@ export interface IDebugger {
   (formatter: any, ...args: any[]): void;
   enabled: boolean;
   log: (...args: any[]) => any;
-  destroy: () => boolean;
 }
 
 interface Formatters {
@@ -10,7 +9,7 @@ interface Formatters {
 }
 
 export interface IDebug {
-  (namespace: string, color?: boolean | string): IDebugger;
+  (namespace: string, color?: boolean): IDebugger;
   disable: () => string;
   enable: (namespaces: string) => void;
   enabled: (namespaces: string) => boolean;
