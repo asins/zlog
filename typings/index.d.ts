@@ -15,6 +15,8 @@ export interface IDebug {
   enabled: (namespaces: string) => boolean;
   log: (...args: any[]) => any;
 
+  canUseColor: boolean;
+
   formatters: Formatters;
 }
 
