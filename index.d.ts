@@ -20,15 +20,6 @@ export interface IDebug {
   formatters: Formatters;
 }
 
-const createDebug: IDebug;
-
-export default createDebug;
+export default IDebug;
 
 export const show2Html: (debug: IDebug) => void;
-
-declare global {
-  interface Window {
-    // 多个文件时共用debug配置
-    __ZLOG_COMMON: IDebug;
-  }
-}
