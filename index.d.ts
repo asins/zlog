@@ -1,25 +1,35 @@
-export interface IDebugger {
-  (formatter: any, ...args: any[]): void;
-  enabled: boolean;
-  log: (...args: any[]) => any;
+/* eslint-disable no-var */
+/* eslint-disable no-redeclare */
+declare namespace debug {
+  interface Debugger {
+    (formatter: any, ...args: any[]): void;
+
+    enabled: boolean;
+    log: (...args: any[]) => any;
+  }
+
+  interface Formatters {
+    [formatter: string]: (v: any) => string;
+  }
+
+  interface Debug {
+    (namespace: string, canUseColor?: boolean): Debugger;
+    disable: () => string;
+    enable: (namespaces: string) => void;
+    enabled: (namespaces: string) => boolean;
+    log: (...args: any[]) => any;
+
+    canUseColor: boolean;
+
+    formatters: Formatters;
+  }
+
+  type IDebug = Debug;
+
+  type IDebugger = Debugger;
 }
 
-interface Formatters {
-  [formatter: string]: (v: any) => string;
-}
+declare var debug: debug.Debug & { debug: debug.Debug; default: debug.Debug };
 
-export interface IDebug {
-  (namespace: string, color?: boolean): IDebugger;
-  disable: () => string;
-  enable: (namespaces: string) => void;
-  enabled: (namespaces: string) => boolean;
-  log: (...args: any[]) => any;
-
-  canUseColor: boolean;
-
-  formatters: Formatters;
-}
-
-export default IDebug;
-
-export const show2Html: (debug: IDebug) => void;
+export = debug;
+export as namespace debug;
