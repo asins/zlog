@@ -6,6 +6,8 @@ package-lock.json
 node_modules/
 demo.jpg
 demo/
-*.ts
+index.ts
+show2Html.ts
+common.ts
 rollup.config.js
 .eslintrc
