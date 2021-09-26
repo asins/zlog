@@ -1,6 +1,6 @@
 {
   "name": "zlog-web",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "description": "A tiny JavaScript debugging utility, Works in web browsers.",
   "main": "index.cjs.js",
   "module": "index.esm.js",
