@@ -178,6 +178,14 @@ function createDebug(namespace, canUseColor) {
 let winZlog = window.__ZLOG_COMMON;
 if (!winZlog) {
   winZlog = Object.assign(createDebug, common);
+  Object.defineProperty(winZlog, "canUseColor", {
+    enumerable: true,
+    configurable: false,
+    get: () => common.canUseColor,
+    set: (v) => {
+      common.canUseColor = v;
+    }
+  });
   window.__ZLOG_COMMON = winZlog;
 }
 var winZlog$1 = winZlog;

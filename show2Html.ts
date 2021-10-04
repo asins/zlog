@@ -6,7 +6,11 @@ export interface Show2HtmlOptions {
   dock?: IDockValue;
   /** Debug插入的Dom */
   container?: HTMLElement;
+  /** 日志插入方式 */
+  insertPosition?: 'afterbegin' | 'beforeend';
 }
+export const INSERT_POSITION_AFTER_BEGIN = 'afterbegin';
+export const INSERT_POSITION_BEFORE_END = 'beforeend';
 
 // 是否将日志显示在网页中
 export default function show2Html(Debug, options: Show2HtmlOptions = {}) {
@@ -113,7 +117,10 @@ export default function show2Html(Debug, options: Show2HtmlOptions = {}) {
     const log = /^(%c)?([^ %]+)/.exec(args[0]);
     const name = log[2];
     updateFilterList(name, log && log[1] && args[1]);
-    $logs.insertAdjacentHTML('beforeend', `<div class="item" data-name="${name}">${html}</div>`);
+    $logs.insertAdjacentHTML(
+      options.insertPosition === INSERT_POSITION_AFTER_BEGIN ? INSERT_POSITION_AFTER_BEGIN : INSERT_POSITION_BEFORE_END,
+      `<div class="item" data-name="${name}">${html}</div>`,
+    );
   };
 
   function updateFilterList(name, color) {

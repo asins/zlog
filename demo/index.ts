@@ -1,12 +1,14 @@
 import Debug from '../index';
-import show2Html from '../show2Html';
+import show2Html, { INSERT_POSITION_BEFORE_END } from '../show2Html';
 import queryString from 'query-string';
 
 const pageUrlParams = queryString.parse(window.location.search, {
   parseNumbers: true,
   parseBooleans: true,
 });
-show2Html(Debug);
+const $logs = show2Html(Debug, {
+  insertPosition: 'afterbegin',
+});
 
 // 设置日志显示规则
 Debug.enable('*, -name:input');
@@ -62,16 +64,20 @@ setTimeout(() => {
   logClose('此日志不可见');
 }, 1000);
 
-setTimeout(() => {
-// 对所有日志模式设置显示规则
-  Debug.enable((pageUrlParams && pageUrlParams.DEBUG === 1) ? '*' : String(pageUrlParams.DEBUG || ''));
+if (pageUrlParams && pageUrlParams.DEBUG === 1) {
+  setTimeout(() => {
+    $logs.querySelector('.logs').insertAdjacentHTML(INSERT_POSITION_BEFORE_END, '<div class="item">输出所有命令空间的日志:</div>');
+    Debug.enable('*');
+    Debug.canUseColor = false;
 
-  const logKeyDown = Debug('keyboard:down');
-  document.addEventListener('keydown', (e) => {
-    logKeyDown('keyCode=%i, code=%s', e.keyCode, e.code);
-  });
-  const logKeyUp = Debug('keyboard:up');
-  document.addEventListener('keyup', (e) => {
-    logKeyUp('keyCode=%i, code=%s', e.keyCode, e.code);
-  });
-}, 1000);
+    const logKeyDown = Debug('keyboard:down');
+    document.body.addEventListener('keydown', (e) => {
+      console.log('keydown', e.code);
+      logKeyDown('keyCode=%i, code=%s', e.keyCode, e.code);
+    });
+    const logKeyUp = Debug('keyboard:up');
+    document.body.addEventListener('keyup', (e) => {
+      logKeyUp('keyCode=%i, code=%s', e.keyCode, e.code);
+    });
+  }, 2000);
+}

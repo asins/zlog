@@ -38,6 +38,7 @@ export const common = {
  * @api private
  */
 export function save(namespaces) {
+  // console.log('common save:', namespaces);
   try {
     if (namespaces) {
       storage.setItem('debug', namespaces);

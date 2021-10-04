@@ -39,7 +39,7 @@ export default [
   {
     input: 'demo/index.ts',
     output: [
-      { file: 'demo/demo.js', format: 'umd' },
+      { file: 'demo/index.js', format: 'umd' },
     ],
     plugins: [
       resolve({ browser: true }),

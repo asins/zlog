@@ -1,3 +1,5 @@
+const INSERT_POSITION_AFTER_BEGIN = "afterbegin";
+const INSERT_POSITION_BEFORE_END = "beforeend";
 function show2Html(Debug, options = {}) {
   const dockSideList = ["mini", "bottom", "all"];
   const $el = document.createElement("div");
@@ -94,7 +96,7 @@ function show2Html(Debug, options = {}) {
     const log = /^(%c)?([^ %]+)/.exec(args[0]);
     const name = log[2];
     updateFilterList(name, log && log[1] && args[1]);
-    $logs.insertAdjacentHTML("beforeend", `<div class="item" data-name="${name}">${html}</div>`);
+    $logs.insertAdjacentHTML(options.insertPosition === INSERT_POSITION_AFTER_BEGIN ? INSERT_POSITION_AFTER_BEGIN : INSERT_POSITION_BEFORE_END, `<div class="item" data-name="${name}">${html}</div>`);
   };
   function updateFilterList(name, color) {
     if (name && !Object.prototype.hasOwnProperty.call(filters, name)) {
@@ -110,3 +112,4 @@ function getClassName(str) {
 }
 
 export default show2Html;
+export { INSERT_POSITION_AFTER_BEGIN, INSERT_POSITION_BEFORE_END };
