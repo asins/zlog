@@ -8,6 +8,7 @@ const pageUrlParams = queryString.parse(window.location.search, {
 });
 const $logs = show2Html(Debug, {
   insertPosition: 'afterbegin',
+  dock: 'bottom',
 });
 
 // 设置日志显示规则

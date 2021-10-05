@@ -15,24 +15,24 @@ function show2Html(Debug, options = {}) {
   .${className}.bottom .logs{height:50vh;}
   .${className}.all{width:100%;height:100%;top:0;left:0}
   .${className}.mini{width:0;height:0;}
-  .${className}.mini .tools-${className} .logo{position:fixed;bottom:5px;right:5px}
+  .${className}.mini .t-${className} .logo{position:fixed;bottom:5px;right:5px}
   .${className}.mini .logs,
   .${className}.mini .filter{display:none}
-  .${className} .tools-${className}{position:absolute;width:100%;display:flex;align-items:center;justify-content:flex-end;background:rgba(0,0,0,.6)}
-  .${className} .tools-${className} .logo{flex:none;user-select:none;width:22px;height:22px;line-height:22px;font-size:18px;display:inline-block;text-align:center;background:rgba(0,0,0,.8);border-radius:5px;overflow:hidden;cursor:pointer}
-  .${className} .tools-${className} .filter{margin:0 6px;flex:auto;overflow:auto;white-space:nowrap}
-  .${className} .tools-${className} .filter .item{margin-right:3px;line-height:18px;padding:2px 4px;display:inline-block;cursor:pointer}
-  .${className} .tools-${className} .filter .select{background:#000;position:relative}
-  .${className} .tools-${className} .filter .select:before{content:"";position:absolute;width:0;height:0;top:0;left:0;border: 3px solid red;border-bottom-color:transparent;border-right-color:transparent;}
+  .${className} .t-${className}{position:absolute;width:100%;display:flex;align-items:center;justify-content:flex-end;background:rgba(0,0,0,.6)}
+  .${className} .t-${className} .logo{flex:none;user-select:none;width:22px;height:22px;line-height:22px;font-size:18px;display:inline-block;text-align:center;background:rgba(0,0,0,.8);border-radius:5px;cursor:pointer}
+  .${className} .t-${className} .filter{margin:0 6px;flex:auto;overflow:auto;white-space:nowrap}
+  .${className} .t-${className} .filter .item{margin-right:3px;line-height:18px;padding:2px 4px;display:inline-block;cursor:pointer}
+  .${className} .t-${className} .filter .select{background:#000;position:relative}
+  .${className} .t-${className} .filter .select:before{content:"";position:absolute;width:0;height:0;top:0;left:0;border: 3px solid red;border-bottom-color:transparent;border-right-color:transparent;}
   .${className} .logs{padding:28px 10px 6px;overflow:auto;height:100%;box-sizing:border-box}
   .${className} .logs.disable .item{display:none}
   </style>
-  <div class="tools-${className}"><div class="filter"></div><div class="logo">Z</div></div>
+  <div class="t-${className}"><div class="filter"></div><div class="logo">Z</div></div>
   <div class="logs"></div>`);
   (options.container || document.body).appendChild($el);
   const $style = $el.querySelector("style");
   const $logs = $el.querySelector(".logs");
-  const $icon = $el.querySelector(`.tools-${className} .logo`);
+  const $icon = $el.querySelector(`.t-${className} .logo`);
   $icon.addEventListener("click", (e) => {
     $el.classList.remove(dockSideList[curdockSideIndex]);
     curdockSideIndex = (curdockSideIndex + 1) % dockSideList.length;
@@ -101,8 +101,8 @@ function show2Html(Debug, options = {}) {
   function updateFilterList(name, color) {
     if (name && !Object.prototype.hasOwnProperty.call(filters, name)) {
       filters[name] = false;
-      $style.innerText += `.${className} .logs[${getClassName(name)}="true"] .item[data-name="${name}"]{display:block} `;
-      $filters.insertAdjacentHTML("beforeend", `<span class="item" data-name="${name}"${color ? ` style="${color}"` : ""}>${name}</span>`);
+      $style.innerText += `.${className} .logs[${getClassName(name)}="true"] .item[data-name="${name}"]{display:block}`;
+      $filters.insertAdjacentHTML("beforeend", `<span class="item" data-name="${name}" ${color ? `style="${color}"` : ""}>${name}</span>`);
     }
   }
   return $el;
