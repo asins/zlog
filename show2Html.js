@@ -111,5 +111,4 @@ function getClassName(str) {
   return str.replace(/[^a-z0-9-]/ig, "-");
 }
 
-export default show2Html;
-export { INSERT_POSITION_AFTER_BEGIN, INSERT_POSITION_BEFORE_END };
+export { INSERT_POSITION_AFTER_BEGIN, INSERT_POSITION_BEFORE_END, show2Html as default };

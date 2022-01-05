@@ -159,7 +159,7 @@ function createDebug(namespace, canUseColor) {
     }
     formatArgs(debug, namespace, color, args, diffTime);
     const logFn = debug.log || createDebug.log;
-    logFn.apply(debug, args);
+    logFn.apply(logFn, args);
   }
   Object.defineProperty(debug, "enabled", {
     enumerable: true,
@@ -186,4 +186,4 @@ if (!winZlog) {
 }
 var winZlog$1 = winZlog;
 
-export default winZlog$1;
+export { winZlog$1 as default };
