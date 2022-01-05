@@ -112,7 +112,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
     formatArgs(debug, namespace, color, args, diffTime);
 
     const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
-    logFn.apply(debug, args);
+    logFn.apply(logFn, args);
   }
 
   Object.defineProperty(debug, 'enabled', {
