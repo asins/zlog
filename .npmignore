@@ -11,3 +11,4 @@ show2Html.ts
 common.ts
 rollup.config.js
 .eslintrc
+pnpm-lock.yaml
