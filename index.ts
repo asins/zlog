@@ -97,7 +97,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
       return;
     }
 
-    const currTime = performance.now();
+    const currTime = +(new Date());
     const diffTime = currTime - (prevTime || currTime);
     prevTime = currTime;
 

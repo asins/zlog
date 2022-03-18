@@ -154,7 +154,7 @@ function createDebug(namespace, canUseColor) {
     if (!debug.enabled) {
       return;
     }
-    const currTime = performance.now();
+    const currTime = +new Date();
     const diffTime = currTime - (prevTime || currTime);
     prevTime = currTime;
     args[0] = coerce(args[0]);
@@ -163,7 +163,7 @@ function createDebug(namespace, canUseColor) {
     }
     formatArgs(debug, namespace, color, args, diffTime);
     const logFn = debug.log || createDebug.log;
-    logFn.apply(logFn, args);
+    logFn.apply(debug.log ? debug : createDebug, args);
   }
   Object.defineProperty(debug, "enabled", {
     enumerable: true,
