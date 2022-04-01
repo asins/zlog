@@ -1,4 +1,3 @@
-const storage = window.localStorage;
 const colorData = '00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F39C39F3C03C33C63C93CC3CF60C60F63C63F6C06C390C90F93C93F9C09C3C00C03C06C09C0CC0FC30C33C36C39C3CC3FC60C63C90C93CC0CC3F00F03F06F09F0CF0FF30F33F36F39F3CF3FF60F63F90F93FC0FC3';
 
 /**
@@ -40,6 +39,7 @@ export const common = {
 export function save(namespaces) {
   // console.log('common save:', namespaces);
   try {
+    const storage = window.localStorage;
     if (namespaces) {
       storage.setItem('debug', namespaces);
     } else {
@@ -60,6 +60,7 @@ export function save(namespaces) {
 export function load() {
   let r;
   try {
+    const storage = window.localStorage;
     r = storage.getItem('debug');
   } catch (error) {
     // Swallow
