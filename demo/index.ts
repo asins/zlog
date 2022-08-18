@@ -6,10 +6,13 @@ const pageUrlParams = queryString.parse(window.location.search, {
   parseNumbers: true,
   parseBooleans: true,
 });
-const $logs = show2Html(Debug, {
-  insertPosition: 'afterbegin',
-  dock: 'bottom',
-});
+let $logs;
+if (pageUrlParams.debugType === 'html') {
+  $logs = show2Html(Debug, {
+    insertPosition: 'afterbegin',
+    dock: 'bottom',
+  });
+}
 
 // 设置日志显示规则
 Debug.enable('*, -name:input');
@@ -67,7 +70,9 @@ setTimeout(() => {
 
 if (pageUrlParams && pageUrlParams.DEBUG === 1) {
   setTimeout(() => {
-    $logs.querySelector('.logs').insertAdjacentHTML(INSERT_POSITION_BEFORE_END, '<div class="item">输出所有命令空间的日志:</div>');
+    if ($logs) {
+      $logs.querySelector('.logs').insertAdjacentHTML(INSERT_POSITION_BEFORE_END, '<div class="item">输出所有命令空间的日志:</div>');
+    }
     Debug.enable('*');
     Debug.canUseColor = false;
 

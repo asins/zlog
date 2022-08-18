@@ -33,7 +33,7 @@ function humanize(ms) {
 
 function formatArgs(self, namespace, color, args, diffTime) {
   const isColorSpace = color ? ' %c' : ' ';
-  args[0] = `${color ? '%c' : ''}${namespace}${isColorSpace}${args[0]}${isColorSpace}+${humanize(diffTime)}`;
+  args[0] = `${color ? '%c' : ''}${namespace} +${humanize(diffTime)}${isColorSpace}${args[0]}${isColorSpace}`;
 
   const c = `color: ${color}`;
 
