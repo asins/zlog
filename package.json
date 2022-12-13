@@ -1,5 +1,5 @@
 {
-  "name": "zlog-web",
+  "name": "@ali/zlog-web",
   "version": "0.0.38",
   "description": "A tiny JavaScript debugging utility, Works in web browsers.",
   "main": "index.js",
