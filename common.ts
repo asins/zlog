@@ -24,7 +24,7 @@ export const common = {
    * @api public
    */
   log: (...args) => {
-    console.log(console, args);
+    console.log.apply(console, args);
   },
 
   enable,

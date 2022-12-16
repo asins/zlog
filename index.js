@@ -10,7 +10,7 @@ const common = {
   formatters: {},
   canUseColor: true,
   log: (...args) => {
-    console.log(console, args);
+    console.log.apply(console, args);
   },
   enable,
   enabled,
