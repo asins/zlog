@@ -9,8 +9,9 @@ const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, "$&$&
 const common = {
   formatters: {},
   canUseColor: true,
-  log: console.log || (() => {
-  }),
+  log: (...args) => {
+    console.log(console, args);
+  },
   enable,
   enabled,
   disable
