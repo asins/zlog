@@ -149,7 +149,8 @@ function createDebug(namespace, canUseColor) {
   let prevTime;
   let enableOverride = null;
   let color;
-  if (common.canUseColor === true && canUseColor !== false) {
+  const hasColor = canUseColor !== void 0 ? canUseColor : common.canUseColor === void 0 || common.canUseColor;
+  if (hasColor) {
     color = selectColor(namespace);
   }
   function debug(...args) {

@@ -86,8 +86,8 @@ function createDebug(namespace: string, canUseColor?: boolean) {
   let enableOverride: boolean = null;
 
   let color: string;
-
-  if (!(common.canUseColor === false || canUseColor === false)) {
+  const hasColor = canUseColor !== undefined ? canUseColor : (common.canUseColor === undefined || common.canUseColor);
+  if (hasColor) {
     color = selectColor(namespace);
   }
 

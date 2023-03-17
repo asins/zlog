@@ -68,6 +68,31 @@ debug('this is hex: %h', new Buffer('hello world'));
 //   foo this is hex: 68656c6c6f20776f726c6421 +0ms
 ```
 
+### 关闭高亮日志
+高亮日志的功能**默认打开**的，关闭日志高亮支持全局关闭，或者只针对某个模块关闭。
+
+**全局关闭日志高亮：**
+```js
+import createDebug from 'zlog-web';
+
+createDebug.canUseColor = false;
+const zLog = createDebug('test');
+
+zLog('此日志无高亮');
+```
+
+**针对模块关闭高亮：**
+```js
+import createDebug from 'zlog-web';
+
+const zLog = createDebug('test');
+const zLogNoColor = createDebug('noColor', false);
+
+zLog('此日志会被高亮显示');
+zLogNoColor('此日志无高亮');
+```
+
+
 ### 在网页中显示日志
 
 库中已将`log`方法对外暴露，覆盖后就能按自己的意愿来显示，项目中提供了一种在网页中显示日志的方法，再结合 URL 参数开关就可在 H5 端显示漂亮的日志了。
