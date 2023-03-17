@@ -87,7 +87,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
 
   let color: string;
 
-  if (common.canUseColor === true && canUseColor !== false) {
+  if (!(common.canUseColor === false || canUseColor === false)) {
     color = selectColor(namespace);
   }
 
