@@ -144,11 +144,7 @@ function formatArgs(self, namespace, color, args, diffTime) {
 function createDebug(namespace, canUseColor) {
   let prevTime;
   let enableOverride = null;
-  let color;
-  const hasColor = canUseColor !== void 0 ? canUseColor : common.canUseColor === void 0 || common.canUseColor;
-  if (hasColor) {
-    color = selectColor(namespace);
-  }
+  const color = selectColor(namespace);
   function debug(...args) {
     if (!debug.enabled) {
       return;
@@ -160,7 +156,9 @@ function createDebug(namespace, canUseColor) {
     if (typeof args[0] !== "string") {
       args.unshift("%O");
     }
-    formatArgs(debug, namespace, color, args, diffTime);
+    const hasColor = canUseColor !== void 0 ? canUseColor : common.canUseColor === void 0 || common.canUseColor;
+    const curColorStr = hasColor ? color : null;
+    formatArgs(debug, namespace, curColorStr, args, diffTime);
     const logFn = debug.log || createDebug.log;
     logFn.apply(debug.log ? debug : createDebug, args);
   }

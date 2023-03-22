@@ -85,11 +85,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
   // 是否允许输出日志
   let enableOverride: boolean = null;
 
-  let color: string;
-  const hasColor = canUseColor !== undefined ? canUseColor : (common.canUseColor === undefined || common.canUseColor);
-  if (hasColor) {
-    color = selectColor(namespace);
-  }
+  const color = selectColor(namespace);
 
   function debug(...args) {
     // Disabled?
@@ -108,8 +104,11 @@ function createDebug(namespace: string, canUseColor?: boolean) {
       args.unshift('%O');
     }
 
+    const hasColor = canUseColor !== undefined ? canUseColor : (common.canUseColor === undefined || common.canUseColor);
+    const curColorStr = hasColor ? color : null;
+
     // 应用特定于环境的格式
-    formatArgs(debug, namespace, color, args, diffTime);
+    formatArgs(debug, namespace, curColorStr, args, diffTime);
 
     const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
     logFn.apply((debug as IDebugger).log ? debug : createDebug, args);
