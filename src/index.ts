@@ -1,4 +1,3 @@
-import { IDebug, IDebugger } from './index.d';
 import { coerce, selectColor, commonEnable, commonEnabled, commonDisable, formatArgs } from './common';
 
 const WindowName = '__ZLOG_COMMON';
@@ -22,7 +21,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
 
   function debug(...args) {
     // Disabled?
-    if (!(debug as IDebugger).enabled) {
+    if (!(debug as Debugger).enabled) {
       return;
     }
 
@@ -43,8 +42,8 @@ function createDebug(namespace: string, canUseColor?: boolean) {
     // 应用特定于环境的格式
     formatArgs(namespace, curColorStr, args, diffTime);
 
-    const logFn = (debug as IDebugger).log || (createDebug as IDebug).log;
-    logFn.apply((debug as IDebugger).log ? debug : createDebug, args);
+    const logFn = (debug as Debugger).log || (createDebug as CreateDebug).log;
+    logFn.apply((debug as Debugger).log ? debug : createDebug, args);
   }
 
   Object.defineProperty(debug, 'enabled', {
@@ -56,7 +55,7 @@ function createDebug(namespace: string, canUseColor?: boolean) {
     },
   });
 
-  return debug as IDebugger;
+  return debug as Debugger;
 }
 
 /**
@@ -78,12 +77,29 @@ if (!winZlog) {
   winZlog = window[WindowName] = createDebug;
 }
 
-export default winZlog;
+export default winZlog as CreateDebug;
 
 
 declare global {
   interface Window {
     // 多个文件时共用debug配置
-    __ZLOG_COMMON: IDebug;
+    __ZLOG_COMMON: CreateDebug;
   }
+}
+
+export interface Debugger {
+  (formatter: any, ...args: any[]): void;
+
+  enabled: boolean;
+  log: (...args: any[]) => any;
+}
+
+export interface CreateDebug {
+  (namespace: string, canUseColor?: boolean): Debugger;
+  disable: () => string;
+  enable: (namespaces: string) => void;
+  enabled: (namespaces: string) => boolean;
+  log: (...args: any[]) => any;
+
+  canUseColor: boolean;
 }

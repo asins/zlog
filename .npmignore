@@ -12,3 +12,7 @@ common.ts
 rollup.config.js
 .eslintrc
 pnpm-lock.yaml
+.swcrc
+rollup.config.mjs
+jest.config.mjs
+tests/
