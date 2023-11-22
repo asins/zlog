@@ -1,5 +1,5 @@
-import Debug from '../index';
-import show2Html, { INSERT_POSITION_BEFORE_END } from '../show2Html';
+import Debug from '../src/index';
+import show2Html, { INSERT_POSITION_BEFORE_END } from '../src/show2Html';
 import queryString from 'query-string';
 
 const pageUrlParams = queryString.parse(window.location.search, {
@@ -13,6 +13,13 @@ if (pageUrlParams.debugType === 'html') {
     dock: 'bottom',
   });
 }
+
+document.body.insertAdjacentHTML('afterbegin', `<h1>debug demo</h1>
+<p>打开控制台后，执行<code>localStorage.setItem('debug', '*')</code>后，就能查看测试结果。</p>
+<div>功能开关：</div>
+<ul>
+  <li>在URL中追加<code>?debugType=html</code>，可让日志输出在页面中</li>
+</ul>`);
 
 // 设置日志显示规则
 Debug.enable('*, -name:input');

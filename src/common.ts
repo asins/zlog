@@ -1,36 +1,22 @@
-const colorData = '00C00F03C03F06C06F09C09F0C00C30C60C90CC0CF30C30F33C33F36C36F39C39F3C03C33C63C93CC3CF60C60F63C63F6C06C390C90F93C93F9C09C3C00C03C06C09C0CC0FC30C33C36C39C3CC3FC60C63C90C93CC0F03F06F09F0CF30F33F36F39F60F63F90F93FC0';
+const LOCAL_NAME = 'debug';
+const oneSecond = 1000;
+const oneMinute = oneSecond * 60;
+const oneHour = oneMinute * 60;
 
 /**
  * 当前活动的调试模式名称以及要跳过的名称。
  */
-const names = [];
-const skips = [];
+const names = []; // 要显示的模块名称列表
+const skips = []; // 要跳过的模块名称列表
 
-const colors = colorData.match(/\w{3}/g).map((c3) => `#${c3.replace(/\w/g, '$&$&')}`);
-
-export const common = {
-  /**
-   * 调试“ format”参数的特殊“％n”处理函数的映射。
-   * 有效的密钥名称是单个，小写或大写字母，即“ n”和“ N”。
-   */
-  formatters: {},
-
-  /**
-   * 对全局日志设置是否允许使用颜色
-   */
-  canUseColor: true,
-
-  /**
-   * @api public
-   */
-  log: (...args) => {
-    console.log.apply(console, args);
-  },
-
-  enable,
-  enabled,
-  disable,
-};
+function letterEach(prefix: string): string[] {
+  const letterArr = '0369CF'.split('');
+  return letterArr.map((letter) => `${prefix}${letter}${letter}`);
+}
+const colors = letterEach('#')
+  .reduce((res, c) => res.concat(letterEach(c)), [])
+  .reduce((res, c) => res.concat(letterEach(c)), [])
+  .filter((c) => !/#([A-F0-9])\1{5}|[0F]{4}/.test(c))
 
 /**
  * Save `namespaces`.
@@ -39,13 +25,12 @@ export const common = {
  * @api private
  */
 export function save(namespaces) {
-  // console.log('common save:', namespaces);
   try {
     const storage = window.localStorage;
     if (namespaces) {
-      storage.setItem('debug', namespaces);
+      storage.setItem(LOCAL_NAME, namespaces);
     } else {
-      storage.removeItem('debug');
+      storage.removeItem(LOCAL_NAME);
     }
   } catch (error) {
     // Swallow
@@ -63,7 +48,7 @@ export function load() {
   let r;
   try {
     const storage = window.localStorage;
-    r = storage.getItem('debug');
+    r = storage.getItem(LOCAL_NAME);
   } catch (error) {
     // Swallow
     // XXX (@Qix-) should we be logging these?
@@ -83,14 +68,14 @@ export function load() {
  * @param {String} namespaces
  * @api public
  */
-function enable(namespaces) {
+export function commonEnable(namespaces) {
   save(namespaces);
 
   // 清空数组并保留引用句柄
   names.length = 0;
   skips.length = 0;
 
-  let i;
+  let i: number;
   const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
   const len = split.length;
 
@@ -116,12 +101,12 @@ function enable(namespaces) {
   * @return {String} namespaces
   * @api public
   */
-function disable() {
+export function commonDisable() {
   const namespaces = [
     ...names.map(toNamespace),
     ...skips.map(toNamespace).map((namespace) => `-${ namespace}`),
   ].join(',');
-  enable('');
+  commonEnable('');
   return namespaces;
 }
 
@@ -132,7 +117,7 @@ function disable() {
  * @return {Boolean}
  * @api public
  */
-function enabled(name) {
+export function commonEnabled(name) {
   if (name[name.length - 1] === '*') {
     return true;
   }
@@ -200,5 +185,54 @@ export function selectColor(namespace) {
   return colors[Math.abs(hash) % colors.length];
 }
 
+/**
+ * 为毫秒时间加上单位
+ * @param {Number} ms 毫秒
+ */
+export function humanize(ms) {
+  ms = parseInt(ms, 10);
+  let suff = 'ms';
+  if (ms >= oneHour) {
+    ms /= oneHour;
+    suff = 'h';
+  } else if (ms >= oneMinute) {
+    ms /= oneMinute;
+    suff = 'm';
+  } else if (ms >= oneSecond) {
+    ms /= oneSecond;
+    suff = 's';
+  }
+  return `${Math.round(ms * 10) / 10}${suff}`;
+}
+
+/**
+ * Colorize log arguments if enabled.
+ */
+export function formatArgs(namespace, color, args, diffTime) {
+  const isColorSpace = color ? ' %c' : ' ';
+  args[0] = `${color ? '%c' : ''}${namespace} +${humanize(diffTime)}${isColorSpace}${args[0]}${isColorSpace}`;
+
+  const c = `color:${color}`;
+
+  // 最后的“％c”有点棘手，因为在％c之前或之后可能还会传递其他参数，因此我们需要找出正确的索引以将CSS插入
+  let index = 0;
+  let lastC = 0;
+  // https://en.wikipedia.org/wiki/Printf_format_string
+  args[0].replace(/%([a-zA-Z%])/g, (match) => {
+    if (match === '%%') return;
+
+    index++;
+
+    if (match === '%c') {
+      lastC = index;
+    }
+  });
+
+  if (color) {
+    args.splice(1, 0, c, 'color:inherit');
+    args.splice(lastC, 0, c);
+  }
+}
+
 // 设置默认显示的日志
-enable(load());
+commonEnable(load());

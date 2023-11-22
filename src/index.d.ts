@@ -8,10 +8,6 @@ declare namespace debug {
     log: (...args: any[]) => any;
   }
 
-  interface Formatters {
-    [formatter: string]: (v: any) => string;
-  }
-
   interface Debug {
     (namespace: string, canUseColor?: boolean): Debugger;
     disable: () => string;
@@ -21,7 +17,6 @@ declare namespace debug {
 
     canUseColor: boolean;
 
-    formatters: Formatters;
   }
 
   type IDebug = Debug;

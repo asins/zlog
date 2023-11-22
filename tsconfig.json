@@ -28,7 +28,7 @@
     "./demo/*.ts",
     "./*.ts",
     "./*.d.ts"
-  ],
+, "src/common.ts", "src/index.d.ts", "src/index.ts", "src/show2Html.ts"  ],
   "exclude": [
     "node_modules"
   ]
