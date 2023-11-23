@@ -66,13 +66,15 @@ createDebug.canUseColor = true;
 /**
  * @api public
  */
-createDebug.log = console.log;
+createDebug.log = (...args) => {
+  console.log.apply(console, args);
+},
 createDebug.enable = commonEnable;
 createDebug.enabled = commonEnabled;
 createDebug.disable = commonDisable;
 
 // 让多JS文件时共用一份配置
-let winZlog = window[WindowName];
+let winZlog: CreateDebug = window[WindowName];
 if (!winZlog) {
   winZlog = window[WindowName] = createDebug;
 }

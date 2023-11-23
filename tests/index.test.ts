@@ -1,6 +1,5 @@
 import createDebug from '../src/index'
 
-const WindowName = '__ZLOG_COMMON';
 const LOCAL_NAME = 'debug';
 
 describe('zlog index', () => {
@@ -63,8 +62,9 @@ describe('zlog index', () => {
 
   test('createDebug.disable function', async () => {
     createDebug.enable('test:a,debug:*,-debug:c');
-    const a = createDebug.disable();
-    console.log('disable', a);
+    const data = createDebug.disable();
+
+    expect(data).toBe('test:a,debug:*,-debug:c');
     expect(createDebug.enabled('debug:a')).toBe(false);
     expect(createDebug.enabled('debug:*')).toBe(true); // 带*的都返回true
     expect(createDebug.enabled('test:a')).toBe(false);
