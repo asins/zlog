@@ -1,3 +1,4 @@
+import window from 'global/window';
 import { coerce, selectColor, commonEnable, commonEnabled, commonDisable, formatArgs } from './common';
 
 const WindowName = '__ZLOG_COMMON';

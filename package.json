@@ -50,5 +50,8 @@
     "TypeScript"
   ],
   "author": "asins<asinsimple@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "global": "^4.4.0"
+  }
 }
