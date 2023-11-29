@@ -224,7 +224,7 @@ function htmlTemplate(externals) {
     <script>
     // if (location.search.indexOf('&devtool=true')) {
     //   var script = document.createElement('script');
-    //   script.src="//cdn.bootcdn.net/ajax/libs/eruda/2.4.1/eruda.min.js";
+    //   script.src="//g.alicdn.com/code/lib/eruda/2.4.1/eruda.min.js";
     //   document.body.appendChild(script);
     //   script.onload = function () { eruda.init() }
     // }
