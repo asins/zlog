@@ -99,7 +99,7 @@ zLogNoColor('此日志无高亮');
 
 ```js
 import createDebug from 'zlog-web';
-import show2Html from 'zlog-web/show2Html';
+import show2Html from 'zlog-web/dist/show2Html';
 
 if(/\bdebugType=html\b/.test(window.location.search)) {
   show2Html(Debug);
