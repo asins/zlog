@@ -20,10 +20,7 @@ const EXTENSION = /(\.(umd|cjs|es|m))?\.([cm]?[tj]sx?)$/;
 const swcConfig = JSON.parse(readFileSync(`${projectDirPath}/.swcrc`, 'utf-8'));
 
 /** 入口文件路径 */
-const entries = [
-  'src/index.ts',
-  'src/show2Html.ts',
-];
+const entries = ['src/index.ts', 'src/show2Html.ts'];
 
 console.log(`
   构建目录: ${projectDirPath}
@@ -34,9 +31,12 @@ console.log(`
 const Template_Meta = [
   { charset: 'utf-8' },
   { name: 'format-detection', content: 'telephone=no' },
-  { name: 'viewport', content: 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover' },
+  {
+    name: 'viewport',
+    content:
+      'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover',
+  },
 ];
-
 
 class RollupConfig {
   static _configs = [];
@@ -44,26 +44,44 @@ class RollupConfig {
   static createConfig(entry) {
     const outputPath = entry.replace(/src\//, 'dist/');
     const { _configs } = RollupConfig;
-    const config = defineConfig({
+
+    // esm
+    const esmConfig = defineConfig({
       input: entry,
       output: [
-        { file: replaceName(outputPath, 'x.esm.js'), format: 'es', sourcemap: buildEnv !== 'prod' },
-        { file: replaceName(outputPath, 'x.js'), format: 'cjs', exports: 'named', sourcemap: buildEnv !== 'prod' },
+        {
+          file: replaceName(outputPath, 'x.esm.js'),
+          format: 'es',
+          sourcemap: buildEnv !== 'prod',
+        },
       ],
       plugins: [
-        resolve({ browser: true }),
+        // resolve({ browser: true }),
         commonjs(),
         swc(createSwcConfig()),
       ],
+    });
+    _configs.push(esmConfig);
+
+    // cjs
+    const config = defineConfig({
+      input: entry,
+      output: [
+        {
+          file: replaceName(outputPath, 'x.js'),
+          format: 'cjs',
+          exports: 'named',
+          sourcemap: buildEnv !== 'prod',
+        },
+      ],
+      plugins: [resolve({ browser: true }), commonjs(), swc(createSwcConfig())],
     });
     _configs.push(config);
 
     // create dts config
     const dtsConfig = defineConfig({
       input: entry,
-      output: [
-        { file: replaceName(outputPath, 'x.d.ts'), format: 'umd' },
-      ],
+      output: [{ file: replaceName(outputPath, 'x.d.ts'), format: 'umd' }],
       plugins: [
         resolve(),
         commonjs(),
@@ -105,57 +123,62 @@ export function createSwcConfig() {
   return defineRollupSwcOption(swcConfig);
 }
 
-entries.reduce((res, file) => res.concat(glob(file)), [])
+entries
+  .reduce((res, file) => res.concat(glob(file)), [])
   .forEach((file) => {
     console.log('入口文件 ->', file);
     RollupConfig.createConfig(file);
   });
 
 // 测试
-buildEnv !== 'prod' && RollupConfig.pushConfig(defineConfig({
-  input: 'demo/index.ts',
-  output: [
-    { file: 'dist/demo/index.js', format: 'cjs', sourcemap: true },
-  ],
-  plugins: [
-    // postcss({
-    //   extract: 'test.css',
-    //   use: ['sass'],
-    //   extensions: ['.scss', '.css'],
-    // }),
-    resolve({ browser: true }),
-    commonjs(),
-    swc(createSwcConfig()),
-    html({
-      title: 'debug demo',
-      publicPath: './',
-      fileName: 'index.html',
-      attributes: { html: { lang: 'zh-cn' } },
-      meta: Template_Meta,
-      template: htmlTemplate([
-        // { type: 'js', pos: 'after', code: 'document.body.insertAdjacentHTML(\'afterbegin\', \'<textarea style="width:100%;height:30px;"></textarea>\');' },
-      ]),
+buildEnv !== 'prod' &&
+  RollupConfig.pushConfig(
+    defineConfig({
+      input: 'demo/index.ts',
+      output: [{ file: 'dist/demo/index.js', format: 'cjs', sourcemap: true }],
+      plugins: [
+        // postcss({
+        //   extract: 'test.css',
+        //   use: ['sass'],
+        //   extensions: ['.scss', '.css'],
+        // }),
+        resolve({ browser: true }),
+        commonjs(),
+        swc(createSwcConfig()),
+        html({
+          title: 'debug demo',
+          publicPath: './',
+          fileName: 'index.html',
+          attributes: { html: { lang: 'zh-cn' } },
+          meta: Template_Meta,
+          template: htmlTemplate([
+            // { type: 'js', pos: 'after', code: 'document.body.insertAdjacentHTML(\'afterbegin\', \'<textarea style="width:100%;height:30px;"></textarea>\');' },
+          ]),
+        }),
+        serve({
+          open: false,
+          verbose: true,
+          openPage: '/demo/index.html',
+          contentBase: ['./dist'],
+          host: '127.0.0.1',
+          port: 8080,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          onListening(server) {
+            const address = server.address();
+            const host =
+              address.address === '::' ? 'localhost' : address.address;
+            // 通过使用绑定函数，我们可以通过`this`来访问选项
+            const protocol = this.https ? 'https' : 'http';
+            console.log(
+              `Server listening at ${protocol}://${host}:${address.port}${this.openPage}`,
+            );
+          },
+        }),
+      ],
     }),
-    serve({
-      open: false,
-      verbose: true,
-      openPage: '/demo/index.html',
-      contentBase: ['./dist'],
-      host: '127.0.0.1',
-      port: 8080,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-      onListening(server) {
-        const address = server.address();
-        const host = address.address === '::' ? 'localhost' : address.address;
-        // 通过使用绑定函数，我们可以通过`this`来访问选项
-        const protocol = this.https ? 'https' : 'http';
-        console.log(`Server listening at ${protocol}://${host}:${address.port}${this.openPage}`);
-      },
-    }),
-  ],
-}));
+  );
 
 export default RollupConfig.getConfig();
 
@@ -177,7 +200,11 @@ function htmlTemplate(externals) {
         } else {
           fileList = isCssFile ? links : scripts;
         }
-        fileList.push({ fileName: node.file, code: node.code, attrs: node.attrs });
+        fileList.push({
+          fileName: node.file,
+          code: node.code,
+          attrs: node.attrs,
+        });
       });
       scripts = beforeScripts.concat(scripts);
       links = beforeLinks.concat(links);
@@ -242,14 +269,14 @@ function makeHtmlAttributes(attributes) {
 
   const keys = Object.keys(attributes);
   // eslint-disable-next-line no-return-assign
-  return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
+  return keys.reduce(
+    (result, key) => (result += ` ${key}="${attributes[key]}"`),
+    '',
+  );
 }
 
 function replaceName(entry, name) {
   const exist = name.replace(/^[^.]+/, '');
   const filename = path.basename(entry).replace(EXTENSION, '');
-  return path.resolve(
-    path.dirname(entry),
-    filename + exist,
-  );
+  return path.resolve(path.dirname(entry), filename + exist);
 }
