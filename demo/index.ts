@@ -1,4 +1,4 @@
-import Debug from '../src/index';
+import createDebug from '../src/index';
 import show2Html, { INSERT_POSITION_BEFORE_END } from '../src/show2Html';
 import queryString from 'query-string';
 
@@ -8,32 +8,35 @@ const pageUrlParams = queryString.parse(window.location.search, {
 });
 let $logs;
 if (pageUrlParams.debugType === 'html') {
-  $logs = show2Html(Debug, {
+  $logs = show2Html(createDebug, {
     insertPosition: 'afterbegin',
     dock: 'bottom',
   });
 }
 
-document.body.insertAdjacentHTML('afterbegin', `<h1>debug demo</h1>
+document.body.insertAdjacentHTML(
+  'afterbegin',
+  `<h1>debug demo</h1>
 <p>打开控制台后，执行<code>localStorage.setItem('debug', '*')</code>后，就能查看测试结果。</p>
 <div>功能开关：</div>
 <ul>
   <li>在URL中追加<code>?debugType=html</code>，可让日志输出在页面中</li>
-</ul>`);
+</ul>`,
+);
 
 // 设置日志显示规则
-Debug.enable('*, -name:input');
+createDebug.enable('*,  -name:input');
 
 // 测试排除特定日志
-const logInput = Debug('name:input');
-const logOutput = Debug('name:output');
-const logClose = Debug('name:close');
+const logInput = createDebug('name:input');
+const logOutput = createDebug('name:output');
+const logClose = createDebug('name:close');
 logInput('logInput日志namespace不允许输出，此日志未能输出'); // 当前namespace中不会显示
-logOutput('logOutput日志namespace不允许输出，此日志未能输出');
+logOutput('logOutput日志namespace允许输出');
 logClose('logClose日志namespace可见');
 
 // 测试日志字符中的输出格式
-const debugTestFormatters = Debug('test:format');
+const debugTestFormatters = createDebug('test:format');
 const obj = { a: 'tedt', b: 123, c: [1, 2, 'test'] };
 debugTestFormatters('测试格式化字符规则:');
 debugTestFormatters('测试格式化字符规则:');
@@ -62,13 +65,16 @@ debugTestFormatters('百分号不占用参数位: %%, test', 234, 'test');
 debugTestFormatters('不支持的参数位情况: %t, tt-%x-tt', 234, 'test');
 
 // 测试禁用日志颜色
-const testNoColor = Debug('logger:debugger', false);
+const testNoColor = createDebug('logger:debugger', false);
 testNoColor('测试不使用颜色: %s', '此内容无特殊颜色');
 
 // 测试日志间隔时间
 setTimeout(() => {
   logInput.enabled = true; // 单独针对logInput模式开启日志显示
-  console.log('通过namespace查询日志模式是否显示(不支持通配符)', Debug.enabled('name:output'));
+  console.log(
+    '通过namespace查询日志模式是否显示(不支持通配符)',
+    createDebug.enabled('name:output'),
+  );
   logInput('namespace enabled设置为true后，日志可见了，test input timeout');
   logOutput('test output timeout');
   logClose.enabled = false; // 关闭logClose日志输出
@@ -78,17 +84,22 @@ setTimeout(() => {
 if (pageUrlParams && pageUrlParams.DEBUG === 1) {
   setTimeout(() => {
     if ($logs) {
-      $logs.querySelector('.logs').insertAdjacentHTML(INSERT_POSITION_BEFORE_END, '<div class="item">输出所有命令空间的日志:</div>');
+      $logs
+        .querySelector('.logs')
+        .insertAdjacentHTML(
+          INSERT_POSITION_BEFORE_END,
+          '<div class="item">输出所有命令空间的日志:</div>',
+        );
     }
-    Debug.enable('*');
-    Debug.canUseColor = false;
+    createDebug.enable('*');
+    createDebug.canUseColor = false;
 
-    const logKeyDown = Debug('keyboard:down');
+    const logKeyDown = createDebug('keyboard:down');
     document.body.addEventListener('keydown', (e) => {
       console.log('keydown', e.code);
       logKeyDown('keyCode=%i, code=%s', e.keyCode, e.code);
     });
-    const logKeyUp = Debug('keyboard:up');
+    const logKeyUp = createDebug('keyboard:up');
     document.body.addEventListener('keyup', (e) => {
       logKeyUp('keyCode=%i, code=%s', e.keyCode, e.code);
     });

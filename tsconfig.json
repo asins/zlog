@@ -4,12 +4,7 @@
     "sourceMap": true,
     "allowJs": false,
     "target": "ES6",
-    "lib": [
-      "DOM",
-      "ES6",
-      "ES7",
-      "ES2018.Promise"
-    ],
+    "lib": ["DOM", "ES6", "ES7", "ES2018.Promise"],
     "skipLibCheck": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -22,14 +17,8 @@
     "experimentalDecorators": true,
     "alwaysStrict": true,
     "preserveConstEnums": true,
-    "downlevelIteration": true,
+    "downlevelIteration": true
   },
-  "include": [
-    "./demo/*.ts",
-    "./*.ts",
-    "./*.d.ts"
-, "src/common.ts", "src/index.d.ts", "src/index.ts", "src/show2Html.ts"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./demo/*.ts", "*.d.ts", "src/*.ts"],
+  "exclude": ["node_modules"]
 }
