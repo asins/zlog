@@ -16,3 +16,4 @@ pnpm-lock.yaml
 rollup.config.mjs
 jest.config.mjs
 tests/
+src/
