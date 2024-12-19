@@ -192,11 +192,9 @@ export interface Store {
 //   (namespace: string, canUseColor?: boolean): Debugger;
 //   disable: () => string;
 //   enable: (namespaces: string) => void;
-//   enabled: (namespaces: string) => boolean;
 //   log: (...args: any[]) => any;
 
 //   canUseColor: boolean;
-//
 // }
 
 /**
@@ -259,7 +257,7 @@ createDebug.log = (...args: any[]) => {
 };
 createDebug.enable = commonEnable;
 createDebug.disable = commonDisable;
-createDebug.enabled = commonEnabled;
+// createDebug.enabled = commonEnabled;
 createDebug.store = window.localStorage as Store;
 
 export type CreateDebug = typeof createDebug;
