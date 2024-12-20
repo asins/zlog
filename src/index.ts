@@ -2,27 +2,41 @@ import window from 'global/window';
 import { selectColor } from './color';
 import { humanize } from './time';
 
+export interface Debugger {
+  (formatter: any, ...args: any[]): void;
+
+  enabled: boolean;
+  log: (...args: any[]) => any;
+}
+
+export interface Store {
+  setItem: (name: string, val: string) => void;
+  removeItem: (name: string) => void;
+  getItem: (name: string) => string | null;
+}
+
 const WindowName = '__ZLOG';
 const LOCAL_NAME = 'debug';
 const names = [] as RegExp[]; // 要显示的模块名称列表
 const skips = [] as RegExp[]; // 要跳过的模块名称列表
+const CAN_USE_COLOR = 'canUseColor';
+let store = window.localStorage as Store;
 
 /**
  * Coerce `val`.
  */
-export function coerce(val: any) {
-  if (val instanceof Error) {
-    return val.stack || val.message;
-  }
-  return val;
-}
+// export function coerce(val: any) {
+//   if (val instanceof Error) {
+//     return val.stack || val.message;
+//   }
+//   return val;
+// }
 
 /**
  * Save `namespaces`.
  */
 function save(namespaces: string) {
   try {
-    const { store } = createDebug;
     if (namespaces) {
       store.setItem(LOCAL_NAME, namespaces);
     } else {
@@ -39,7 +53,6 @@ function save(namespaces: string) {
  */
 function load(): string {
   try {
-    const { store } = createDebug;
     return store.getItem(LOCAL_NAME);
   } catch (error) {
     // Swallow
@@ -175,28 +188,6 @@ function formatArgs(
   }
 }
 
-export interface Debugger {
-  (formatter: any, ...args: any[]): void;
-
-  enabled: boolean;
-  log: (...args: any[]) => any;
-}
-
-export interface Store {
-  setItem: (name: string, val: string) => void;
-  removeItem: (name: string) => void;
-  getItem: (name: string) => string | null;
-}
-
-// export interface CreateDebug {
-//   (namespace: string, canUseColor?: boolean): Debugger;
-//   disable: () => string;
-//   enable: (namespaces: string) => void;
-//   log: (...args: any[]) => any;
-
-//   canUseColor: boolean;
-// }
-
 /**
  * 使用给定的“命名空间”创建一个调试器。
  */
@@ -219,10 +210,10 @@ export function createDebug(namespace: string, canUseColor?: boolean) {
     const diffTime = currTime - (prevTime || currTime);
     prevTime = currTime;
 
-    args[0] = coerce(args[0]);
+    // args[0] = coerce(args[0]);
 
     const hasColor =
-      canUseColor !== undefined ? canUseColor : createDebug.canUseColor;
+      canUseColor !== undefined ? canUseColor : createDebug[CAN_USE_COLOR];
     const curColorStr = hasColor ? color : undefined;
 
     // 应用特定于环境的格式
@@ -251,14 +242,18 @@ export function createDebug(namespace: string, canUseColor?: boolean) {
 /**
  * 对全局日志设置是否允许使用颜色
  */
-createDebug.canUseColor = true;
+createDebug[CAN_USE_COLOR] = true;
 createDebug.log = (...args: any[]) => {
   console.log(...args);
 };
 createDebug.enable = commonEnable;
 createDebug.disable = commonDisable;
 // createDebug.enabled = commonEnabled;
-createDebug.store = window.localStorage as Store;
+createDebug.setStore = (s: Store) => {
+  store = s;
+  // 设置默认显示的日志
+  commonEnable(load());
+};
 
 export type CreateDebug = typeof createDebug;
 
