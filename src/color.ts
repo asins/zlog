@@ -6,7 +6,7 @@ export function generateColor(seed: number) {
       if (n - num < 3) n = (num + 4) % 16;
       return n;
     }, item % 16);
-  const toHex = (num: number) => Math.ceil(num).toString(16);
+  const toHex = (num: number) => (num | 0).toString(16);
 
   // 计算三个不同的16进制字符索引
   const rIndex = cb(seed / 25, []); // 第一个字符索引

@@ -31,9 +31,11 @@ createDebug.enable('*,  -name:input');
 const logInput = createDebug('name:input');
 const logOutput = createDebug('name:output');
 const logClose = createDebug('name:close');
+const logMem = createDebug('YL:Store:Member');
 logInput('logInput日志namespace不允许输出，此日志未能输出'); // 当前namespace中不会显示
 logOutput('logOutput日志namespace允许输出');
 logClose('logClose日志namespace可见');
+logMem('日志测试');
 
 // 测试日志字符中的输出格式
 const debugTestFormatters = createDebug('test:format');
